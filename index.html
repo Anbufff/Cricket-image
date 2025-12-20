@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>உள்ளூர் பட தேடல் ஆப் (Offline Image Search App)</title>
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#3498db">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="உள்ளூர் பட தேடல்">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .upload-section, .search-section {
+            margin-bottom: 20px;
+        }
+
+        input[type="file"], input[type="text"] {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .download-all-btn {
+            background-color: #e74c3c;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 10px;
+        }
+
+        .download-all-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .download-btn {
+            background-color: #27ae60;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 5px;
+            width: 100%;
+        }
+
+        .download-btn:hover {
+            background-color: #229954;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .image-item {
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .image-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            max-height: 150px;
+        }
+
+        .image-item .filename {
+            margin-top: 5px;
+            font-size: 12px;
+            color: #666;
+            word-break: break-word;
+        }
+
+        .search-group {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: #ecf0f1;
+            border-radius: 8px;
+        }
+
+        .search-group h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .status {
+            margin-top: 20px;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>உள்ளூர் பட தேடல் ஆப்</h1>
+        <p>இந்த ஆப் offline மட்டும் வேலை செய்யும். படங்களை உங்கள் உலாவியில் சேமித்து, பெயரால் தேடலாம். பல பெயர்களை (எ.கா. "Shubman Gill Sanju Samson") தேடினால், தேடல் வரிசையின்படி அவற்றை வகுத்து அனைத்து படங்களும் காட்டப்படும். தேடிய அனைத்து படங்களையும் ஒரே கிளிக்கில் பதிவிறக்கலாம்.</p>
+        
+        <div class="upload-section">
+            <input type="file" id="fileInput" accept="image/*" multiple>
+            <button id="uploadBtn">படம் பதிவேற்று (Upload Images)</button>
+        </div>
+        
+        <div class="search-section">
+            <input type="text" id="searchInput" placeholder="படத்தின் பெயரால் தேடவும்... (எ.கா. Shubman Gill Sanju Samson - பல பெயர்கள் தேட)">
+            <button id="clearSearchBtn">தேடலை அழி (Clear Search)</button>
+            <button id="downloadAllBtn" class="download-all-btn hidden">அனைத்து தேடல் முடிவுகளையும் பதிவிறக்கு (Download All Results)</button>
+        </div>
+        
+        <div id="gallery" class="gallery"></div>
+        <p id="status" class="status"></p>
+    </div>
+
+    <script>
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+
+        // StorageManager Class
+        class StorageManager {
+            constructor() {
+                this.dbName = 'ImageSearchDB';
+                this.storeName = 'images';
+                this.db = null;
+                this.initDB();
+            }
+
+            initDB() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(this.dbName, 1);
+
+                    request.onerror = () => reject(request.error);
+                    request.onsuccess = () => {
+                        this.db = request.result;
+                        resolve();
+                    };
+
+                    request.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains(this.storeName)) {
+                            const store = db.createObjectStore(this.storeName, { keyPath: 'id', autoIncrement: true });
+                            store.createIndex('filename', 'filename', { unique: false });
+                        }
+                    };
+                });
+            }
+
+            async addImage(blob, filename) {
+                await this.initDB();
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction([this.storeName], 'readwrite');
+                    const store = transaction.objectStore(this.storeName);
+                    const request = store.add({ blob, filename });
+
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async getAllImages() {
+                await this.initDB();
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction([this.storeName], 'readonly');
+                    const store = transaction.objectStore(this.storeName);
+                    const request = store.getAll();
+
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async getImageById(id) {
+                await this.initDB();
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction([this.storeName], 'readonly');
+                    const store = transaction.objectStore(this.storeName);
+                    const request = store.get(id);
+
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async deleteImage(id) {
+                await this.initDB();
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction([this.storeName], 'readwrite');
+                    const store = transaction.objectStore(this.storeName);
+                    const request = store.delete(id);
+
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject(request.error);
+                });
+            }
+        }
+
+        // ImageHandler Class
+        class ImageHandler {
+            constructor(storage) {
+                this.storage = storage;
+                this.galleryElement = document.getElementById('gallery');
+            }
+
+            async uploadImages(files) {
+                const promises = Array.from(files).map(async (file) => {
+                    if (!file.type.startsWith('image/')) return;
+                    const reader = new FileReader();
+                    reader.readAsArrayBuffer(file);
+                    return new Promise((resolve) => {
+                        reader.onload = async () => {
+                            const blob = new Blob([reader.result], { type: file.type });
+                            await this.storage.addImage(blob, file.name);
+                            resolve();
+                        };
+                    });
+                });
+                await Promise.all(promises);
+            }
+
+            async loadImages() {
+                const images = await this.storage.getAllImages();
+                this.galleryElement.innerHTML = '';
+                images.forEach((image) => {
+                    this.createImageElement(image);
+                });
+                // Hide download all button on full load
+                document.getElementById('downloadAllBtn').classList.add('hidden');
+            }
+
+            createImageElement(imageData, groupTitle = null) {
+                const item = document.createElement('div');
+                item.className = 'image-item';
+
+                const img = document.createElement('img');
+                const url = URL.createObjectURL(imageData.blob);
+                img.src = url;
+                img.alt = imageData.filename;
+                img.onload = () => URL.revokeObjectURL(url); // Clean up memory
+
+                const filenameSpan = document.createElement('div');
+                filenameSpan.className = 'filename';
+                filenameSpan.textContent = imageData.filename;
+
+                const downloadBtn = document.createElement('button');
+                downloadBtn.className = 'download-btn';
+                downloadBtn.textContent = 'பதிவிறக்கு (Download)';
+                downloadBtn.addEventListener('click', () => this.downloadImage(imageData.id));
+
+                item.appendChild(img);
+                item.appendChild(filenameSpan);
+                item.appendChild(downloadBtn);
+                item.dataset.filename = imageData.filename.toLowerCase();
+                item.dataset.id = imageData.id;
+
+                return item;
+            }
+
+            async downloadImage(id) {
+                try {
+                    const image = await this.storage.getImageById(id);
+                    if (image) {
+                        const url = URL.createObjectURL(image.blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = image.filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    }
+                } catch (error) {
+                    console.error('Download error:', error);
+                    alert('பதிவிறக்கு பிழை: ' + error.message);
+                }
+            }
+
+            async downloadAll() {
+                const items = document.querySelectorAll('.image-item');
+                if (items.length === 0) {
+                    alert('தேடல் முடிவுகள் இல்லை.');
+                    return;
+                }
+                const status = document.getElementById('status');
+                status.textContent = 'அனைத்தையும் பதிவிறக்குகிறோம்...';
+                try {
+                    for (let item of items) {
+                        const id = parseInt(item.dataset.id);
+                        const image = await this.storage.getImageById(id);
+                        if (image) {
+                            const url = URL.createObjectURL(image.blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = image.filename;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                            // Small delay to avoid overwhelming the browser
+                            await new Promise(resolve => setTimeout(resolve, 300));
+                        }
+                    }
+                    status.textContent = `${items.length} படங்கள் பதிவிறக்கப்பட்டன!`;
+                } catch (error) {
+                    status.textContent = 'பதிவிறக்கு பிழை: ' + error.message;
+                }
+            }
+
+            displayGroupedImages(groupedImages) {
+                this.galleryElement.innerHTML = '';
+                let hasResults = false;
+                Object.entries(groupedImages).forEach(([term, images]) => {
+                    if (images.length > 0) {
+                        hasResults = true;
+                        const groupDiv = document.createElement('div');
+                        groupDiv.className = 'search-group';
+
+                        const title = document.createElement('h3');
+                        title.textContent = `தேடல்: "${term}"`;
+                        groupDiv.appendChild(title);
+
+                        const groupGallery = document.createElement('div');
+                        groupGallery.className = 'gallery';
+
+                        images.forEach((image) => {
+                            const item = this.createImageElement(image, term);
+                            groupGallery.appendChild(item);
+                        });
+
+                        groupDiv.appendChild(groupGallery);
+                        this.galleryElement.appendChild(groupDiv);
+                    }
+                });
+
+                // Show/hide download all button based on results
+                const downloadAllBtn = document.getElementById('downloadAllBtn');
+                if (hasResults) {
+                    downloadAllBtn.classList.remove('hidden');
+                } else {
+                    downloadAllBtn.classList.add('hidden');
+                }
+            }
+        }
+
+        // SearchManager Class
+        class SearchManager {
+            constructor(imageHandler) {
+                this.imageHandler = imageHandler;
+                this.searchInput = document.getElementById('searchInput');
+                this.allImages = [];
+                this.initSearch();
+            }
+
+            initSearch() {
+                this.searchInput.addEventListener('input', (e) => {
+                    this.filterImages(e.target.value.toLowerCase().trim());
+                });
+            }
+
+            async filterImages(query) {
+                if (!query) {
+                    // No query: show all images
+                    await this.imageHandler.loadImages();
+                    return;
+                }
+
+                // Split query into terms (space-separated full names or words)
+                const terms = query.split(/\s+/).filter(term => term.length > 0);
+
+                if (terms.length === 0) {
+                    await this.imageHandler.loadImages();
+                    return;
+                }
+
+                // Group images by matching term (OR logic across terms, but grouped by term)
+                const groupedImages = {};
+                terms.forEach(term => {
+                    groupedImages[term] = [];
+                });
+
+                this.allImages.forEach((image) => {
+                    const filenameLower = image.filename.toLowerCase();
+                    terms.forEach((term) => {
+                        if (filenameLower.includes(term)) {
+                            groupedImages[term].push(image);
+                        }
+                    });
+                });
+
+                // Display grouped
+                this.imageHandler.displayGroupedImages(groupedImages);
+            }
+
+            setAllImages(images) {
+                this.allImages = images;
+            }
+        }
+
+        // Main App Class
+        class ImageSearchApp {
+            constructor() {
+                this.storage = new StorageManager();
+                this.imageHandler = new ImageHandler(this.storage);
+                this.searchManager = new SearchManager(this.imageHandler);
+                this.init();
+            }
+
+            async init() {
+                // Load existing images on start
+                const images = await this.storage.getAllImages();
+                this.searchManager.setAllImages(images);
+                await this.imageHandler.loadImages();
+                this.attachEventListeners();
+                this.updateStatus('ஆப் தயார்! படங்களை பதிவேற்றவும்.');
+            }
+
+            attachEventListeners() {
+                const fileInput = document.getElementById('fileInput');
+                const uploadBtn = document.getElementById('uploadBtn');
+                const clearSearchBtn = document.getElementById('clearSearchBtn');
+                const downloadAllBtn = document.getElementById('downloadAllBtn');
+
+                uploadBtn.addEventListener('click', () => this.handleUpload(fileInput.files));
+                clearSearchBtn.addEventListener('click', () => this.clearSearch());
+                downloadAllBtn.addEventListener('click', () => this.imageHandler.downloadAll());
+            }
+
+            async handleUpload(files) {
+                if (!files.length) return;
+                const status = document.getElementById('status');
+                status.textContent = 'பதிவேற்றுகிறோம்...';
+                try {
+                    await this.imageHandler.uploadImages(files);
+                    const allImages = await this.storage.getAllImages();
+                    this.searchManager.setAllImages(allImages);
+                    await this.imageHandler.loadImages(); // Reload gallery
+                    this.searchManager.filterImages(''); // Reset search
+                    status.textContent = `${files.length} படங்கள் சேமிக்கப்பட்டன!`;
+                } catch (error) {
+                    status.textContent = 'பிழை: ' + error.message;
+                }
+            }
+
+            clearSearch() {
+                document.getElementById('searchInput').value = '';
+                this.searchManager.filterImages('');
+                // Hide download all button
+                document.getElementById('downloadAllBtn').classList.add('hidden');
+            }
+
+            updateStatus(message) {
+                document.getElementById('status').textContent = message;
+            }
+        }
+
+        // Initialize app
+        new ImageSearchApp();
+    </script>
+</body>
+</html>
