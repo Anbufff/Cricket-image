@@ -3,21 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>உள்ளூர் பட தேடல் ஆப் (Offline Image Search App)</title>
-    <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#3498db">
+    <title>படத் தேடல் ஆப்</title>
+    <meta name="theme-color" content="#667eea">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="உள்ளூர் பட தேடல்">
-    <!-- Inline Manifest (Single File) -->
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjogIuCuieCus+CvjeCus+CvguCusOCvjSDgrqrgrp8g4K6k4K+H4K6f4K6y4K+NIOCuhuCuquCvjSIsICJzaG9ydF9uYW1lIjogIuCuieCus+CvjeCus+CvguCusOCvjSDgrqrgrp8g4K6k4K+H4K6f4K6y4K+NIiwgImRlc2NyaXB0aW9uIjogIuCuhuCug+CuquCvjeCusuCviOCuqeCvjSDgrqrgrp8g4K6a4K+H4K6u4K6/4K6q4K+N4K6q4K+BIOCuruCuseCvjeCuseCvgeCuruCvjSDgrqTgr4fgrp/grrLgr40g4K6G4K6q4K+NIiwgInN0YXJ0X3VybCI6ICIvIiwgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmNGY0ZjQiLCAidGhlbWVfY29sb3IiOiAiIzM0OThkYiJ9">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             margin: 0;
-            padding: 20px;
-            color: #333;
+            padding: 10px;
         }
 
         .container {
@@ -27,605 +28,1315 @@
         }
 
         h1 {
+            color: white;
+            margin: 10px 0 15px;
+            font-size: 22px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stats-bar {
+            background: rgba(255,255,255,0.95);
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            font-weight: 600;
             color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 24px;
         }
 
-        .upload-section, .search-section {
-            margin-bottom: 20px;
+        .section {
+            margin-bottom: 15px;
             padding: 15px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        input[type="file"], input[type="text"] {
-            padding: 10px;
-            margin: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            width: 200px;
-        }
-
-        button {
-            background-color: #3498db;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            margin: 5px;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #2980b9;
-        }
-
-        button:disabled {
-            background-color: #bdc3c7;
-            cursor: not-allowed;
-        }
-
-        .download-all-btn {
-            background-color: #e74c3c;
-        }
-
-        .download-all-btn:hover {
-            background-color: #c0392b;
-        }
-
-        .download-btn {
-            background-color: #27ae60;
-            color: white;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+        .section-title {
             font-size: 12px;
-            margin: 2px;
-            width: 48%;
+            color: #666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .download-btn:hover {
-            background-color: #229954;
+        input[type="file"] { display: none; }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            width: 100%;
+            margin-bottom: 8px;
+            transition: transform 0.2s, opacity 0.2s;
         }
 
-        .delete-btn {
-            background-color: #e74c3c;
-            width: 48%;
+        .btn:active { transform: scale(0.95); }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .btn-success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .btn-danger { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
+        .btn-warning { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); }
+        .btn-purple { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); }
+        .btn-teal { background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%); }
+        .btn:disabled { background: #bdc3c7 !important; cursor: not-allowed; opacity: 0.7; }
+
+        .btn-row { display: flex; gap: 8px; }
+        .btn-row .btn { flex: 1; margin: 0; }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .btn-grid .btn { margin: 0; }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 10px;
         }
 
-        .delete-btn:hover {
-            background-color: #c0392b;
+        .search-box input {
+            width: 100%;
+            padding: 12px 40px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 14px;
+        }
+
+        .search-box input:focus { outline: none; border-color: #667eea; }
+        .search-box::before { content: "🔍"; position: absolute; left: 15px; top: 50%; transform: translateY(-50%); }
+
+        .search-box .clear-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: none;
+        }
+        .search-box .clear-btn.show { display: block; }
+
+        .search-hint {
+            font-size: 10px;
+            color: #888;
+            margin-top: 5px;
+            text-align: left;
+            padding-left: 10px;
+        }
+
+        .search-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px;
+            justify-content: center;
+        }
+
+        .search-tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .search-tag .remove {
+            background: rgba(255,255,255,0.3);
+            border: none;
+            color: white;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
         }
 
         .image-item {
             background: white;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             text-align: center;
-            position: relative;
         }
 
         .image-item img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
-            max-height: 150px;
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
         }
 
         .image-item .filename {
-            margin: 5px 0;
-            font-size: 12px;
-            color: #666;
-            word-break: break-word;
-        }
-
-        .image-item .tags {
-            margin: 5px 0;
-            font-size: 11px;
-            color: #7f8c8d;
-            word-break: break-word;
+            margin: 6px 0;
+            font-size: 10px;
+            color: #2c3e50;
+            word-break: break-all;
+            font-weight: 600;
+            background: #e8f5e9;
+            padding: 5px;
+            border-radius: 4px;
         }
 
         .image-item .btn-group {
             display: flex;
-            gap: 2px;
+            gap: 4px;
+        }
+
+        .image-item .btn-group .btn {
+            flex: 1;
+            padding: 6px;
+            font-size: 12px;
+            margin: 0;
         }
 
         .search-group {
-            margin-bottom: 30px;
-            padding: 15px;
-            background: #ecf0f1;
-            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 12px;
+        }
+
+        .search-group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
         }
 
         .search-group h3 {
             color: #2c3e50;
-            margin-bottom: 10px;
-            font-size: 16px;
-        }
-
-        .status {
-            margin-top: 20px;
-            font-style: italic;
-            color: #7f8c8d;
+            margin: 0;
             font-size: 14px;
         }
 
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #3498db;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 10px;
+        .search-group .count-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .search-group .download-group-btn {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 11px;
+            cursor: pointer;
         }
 
-        .hidden {
+        .status {
+            margin-top: 15px;
+            font-size: 13px;
+            color: white;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+
+        .hidden { display: none !important; }
+
+        .selected-info {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            background: #ecf0f1;
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
+            margin: 10px 0 5px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        .progress-fill.backup { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); }
+        .progress-fill.restore { background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%); }
+
+        .progress-text { font-size: 11px; color: #666; }
+
+        .modal {
             display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 15px;
+        }
+        .modal.show { display: flex; }
+
+        .modal-close {
+            position: absolute;
+            top: 10px; right: 15px;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            background: rgba(0,0,0,0.5);
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Responsive */
-        @media (max-width: 600px) {
-            .gallery {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            }
-            input[type="file"], input[type="text"] {
-                width: 100%;
-            }
-            .image-item .btn-group {
-                flex-direction: column;
-            }
-            .download-btn, .delete-btn {
-                width: 100%;
-            }
+        .modal img {
+            max-width: 100%;
+            max-height: 60%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .modal-filename {
+            color: white;
+            background: rgba(0,0,0,0.6);
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            font-size: 12px;
+            word-break: break-all;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .modal-actions .btn { width: auto; padding: 10px 20px; }
+
+        .upload-modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        .upload-modal.show { display: flex; }
+
+        .upload-modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .upload-modal-content h3 {
+            margin: 0 0 15px;
+            color: #2c3e50;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .preview-image {
+            width: 100%;
+            height: 150px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: #f5f5f5;
+            margin-bottom: 15px;
+        }
+
+        .form-group { margin-bottom: 15px; }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus { outline: none; border-color: #667eea; }
+
+        .system-warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            margin-bottom: 15px;
+        }
+
+        .counter {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+            background: #f0f0f0;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .modal-buttons { display: flex; gap: 10px; }
+        .modal-buttons .btn { flex: 1; }
+
+        .empty-state {
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .empty-state .icon { font-size: 50px; }
+
+        .backup-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            border: 2px dashed #bdc3c7;
+        }
+
+        .backup-modal {
+            display: none;
+            position: fixed;
+            z-index: 1002;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        .backup-modal.show { display: flex; }
+
+        .backup-modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+        }
+
+        .backup-modal-content h3 {
+            margin: 0 0 20px;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+
+        .backup-icon { font-size: 50px; margin-bottom: 15px; }
+        .backup-status { font-size: 13px; color: #666; margin: 10px 0; }
+
+        .total-results {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-results .count {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .total-results .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .total-results .actions .btn {
+            width: auto;
+            padding: 8px 15px;
+            margin: 0;
+            font-size: 12px;
+        }
+
+        @media (min-width: 768px) {
+            .gallery { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+            .image-item img { height: 130px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>உள்ளூர் பட தேடல் ஆப்</h1>
+        <h1>🖼️ படத் தேடல் ஆப்</h1>
         
-        <div class="upload-section">
-            <input type="file" id="fileInput" accept="image/*" multiple webkitdirectory>
-            <button id="uploadBtn">ஃபோல்டர் அல்லது படங்கள் பதிவேற்று (Upload Folder/Images)</button>
+        <div class="stats-bar">
+            <span>📷 <span id="totalImages">0</span></span>
+            <span>💾 <span id="storageUsed">0 MB</span></span>
         </div>
         
-        <div class="search-section">
-            <input type="text" id="searchInput" placeholder="படத்தின் பெயரால் அல்லது டேக்குகளால் தேடவும்... (எ.கா. Shubman OR cricket)">
-            <button id="clearSearchBtn">தேடலை அழி (Clear Search)</button>
-            <button id="downloadAllBtn" class="download-all-btn hidden">அனைத்து தேடல் முடிவுகளையும் பதிவிறக்கு (Download All)</button>
+        <div class="section">
+            <div class="section-title">📤 படங்கள் சேர்</div>
+            <input type="file" id="fileInput" accept="image/*" multiple>
+            <label for="fileInput" class="btn btn-success">📷 படங்கள் தேர்வு</label>
+            
+            <div id="selectedInfo" class="selected-info hidden"></div>
+            <button id="uploadBtn" class="btn btn-primary" disabled>⬆️ பதிவேற்று</button>
+            
+            <div id="progressSection" class="hidden">
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill"></div>
+                </div>
+                <div id="progressText" class="progress-text"></div>
+            </div>
+        </div>
+
+        <div class="section backup-section">
+            <div class="section-title">💾 Backup / Restore</div>
+            <input type="file" id="restoreInput" accept=".zip">
+            
+            <div class="btn-grid">
+                <button id="backupBtn" class="btn btn-purple">📦 Backup</button>
+                <label for="restoreInput" class="btn btn-teal">📥 Restore</label>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">🔍 Multiple Search</div>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="rohit, virat, bumrah, tilak...">
+                <button class="clear-btn" id="clearSearchBtn">✕</button>
+            </div>
+            <div class="search-hint">
+                💡 Comma (,) அல்லது space உடன் பல பெயர்களை தேடலாம்
+            </div>
+            <div id="searchTags" class="search-tags"></div>
+            
+            <div class="btn-row" style="margin-top: 10px;">
+                <button id="clearAllBtn" class="btn btn-danger">🗑️ அனைத்தும் அழி</button>
+            </div>
+        </div>
+
+        <!-- Total Results Bar -->
+        <div id="totalResults" class="total-results hidden">
+            <div>
+                <span>🔍 தேடல் முடிவுகள்:</span>
+                <span id="totalFoundCount" class="count">0</span>
+            </div>
+            <div class="actions">
+                <button id="downloadAllResults" class="btn btn-warning">⬇️ அனைத்தும்</button>
+            </div>
         </div>
         
         <div id="gallery" class="gallery"></div>
-        <p id="status" class="status"></p>
+        
+        <div id="emptyState" class="empty-state">
+            <div class="icon">📷</div>
+            <p>படங்கள் இல்லை</p>
+        </div>
+        
+        <p id="status" class="status">🔄 தயாராகிறது...</p>
+    </div>
+
+    <div id="imageModal" class="modal">
+        <span class="modal-close" id="modalClose">×</span>
+        <img id="modalImage" src="">
+        <div id="modalFilename" class="modal-filename"></div>
+        <div class="modal-actions">
+            <button id="modalDownload" class="btn btn-success">⬇️</button>
+            <button id="modalDelete" class="btn btn-danger">🗑️</button>
+        </div>
+    </div>
+
+    <div id="uploadModal" class="upload-modal">
+        <div class="upload-modal-content">
+            <h3>📝 படத்தின் பெயர்</h3>
+            <div id="uploadCounter" class="counter"></div>
+            <img id="previewImage" class="preview-image">
+            <div id="systemWarning" class="system-warning hidden">
+                ⚠️ System ID: <span id="systemName"></span>
+            </div>
+            <div class="form-group">
+                <label>📄 படத்தின் பெயர் *</label>
+                <input type="text" id="imageNameInput" placeholder="உதா: Tilak Varma">
+            </div>
+            <div class="modal-buttons">
+                <button id="skipBtn" class="btn btn-warning">⏭️ தவிர்</button>
+                <button id="saveBtn" class="btn btn-success">✅ சேமி</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="backupModal" class="backup-modal">
+        <div class="backup-modal-content">
+            <div id="backupIcon" class="backup-icon">📦</div>
+            <h3 id="backupTitle">Backup...</h3>
+            <div class="progress-bar">
+                <div id="backupProgress" class="progress-fill backup"></div>
+            </div>
+            <p id="backupStatus" class="backup-status"></p>
+        </div>
+    </div>
+
+    <div id="restoreModal" class="backup-modal">
+        <div class="backup-modal-content">
+            <div id="restoreIcon" class="backup-icon">📥</div>
+            <h3 id="restoreTitle">Restore...</h3>
+            <div class="progress-bar">
+                <div id="restoreProgress" class="progress-fill restore"></div>
+            </div>
+            <p id="restoreStatus" class="backup-status"></p>
+        </div>
     </div>
 
     <script>
-        // Inline PWA Service Worker Registration (Single File)
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', async () => {
-                const swCode = `
-                    const CACHE_NAME = 'image-search-app-v5';
-                    const urlsToCache = ['/'];
-
-                    self.addEventListener('install', (event) => {
-                        event.waitUntil(
-                            caches.open(CACHE_NAME)
-                                .then((cache) => cache.addAll(urlsToCache))
-                        );
-                    });
-
-                    self.addEventListener('fetch', (event) => {
-                        event.respondWith(
-                            caches.match(event.request)
-                                .then((response) => response || fetch(event.request))
-                        );
-                    });
-                `;
-                const blob = new Blob([swCode], { type: 'application/javascript' });
-                const swUrl = URL.createObjectURL(blob);
-                try {
-                    const registration = await navigator.serviceWorker.register(swUrl);
-                    console.log('SW registered: ', registration);
-                } catch (error) {
-                    console.log('SW registration failed: ', error);
-                }
-            });
-        }
-
-        // StorageManager Class
-        class StorageManager {
+    (function() {
+        class ImageDB {
             constructor() {
-                this.dbName = 'ImageSearchDB';
+                this.dbName = 'PhotoAppDB3';
                 this.storeName = 'images';
                 this.db = null;
-                this.initDB();
             }
 
-            initDB() {
+            async open() {
+                if (this.db) return;
                 return new Promise((resolve, reject) => {
-                    const request = indexedDB.open(this.dbName, 2);
-
-                    request.onerror = () => reject(request.error);
-                    request.onsuccess = () => {
-                        this.db = request.result;
-                        resolve();
-                    };
-
-                    request.onupgradeneeded = (e) => {
+                    const req = indexedDB.open(this.dbName, 1);
+                    req.onerror = () => reject(req.error);
+                    req.onsuccess = () => { this.db = req.result; resolve(); };
+                    req.onupgradeneeded = (e) => {
                         const db = e.target.result;
                         if (!db.objectStoreNames.contains(this.storeName)) {
-                            const store = db.createObjectStore(this.storeName, { keyPath: 'id', autoIncrement: true });
-                            store.createIndex('filename', 'filename', { unique: false });
-                            store.createIndex('tags', 'tags', { unique: false });
-                        } else {
-                            const store = request.transaction.objectStore(this.storeName);
-                            if (!store.indexNames.contains('tags')) {
-                                store.createIndex('tags', 'tags', { unique: false });
-                            }
+                            db.createObjectStore(this.storeName, { keyPath: 'id', autoIncrement: true });
                         }
                     };
                 });
             }
 
-            async addImage(blob, filename, tags = []) {
-                await this.initDB();
+            async add(data) {
+                await this.open();
                 return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction([this.storeName], 'readwrite');
-                    const store = transaction.objectStore(this.storeName);
-                    const request = store.add({ blob, filename, tags });
-
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
+                    const tx = this.db.transaction([this.storeName], 'readwrite');
+                    const req = tx.objectStore(this.storeName).add(data);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
                 });
             }
 
-            async getAllImages() {
-                await this.initDB();
+            async getAll() {
+                await this.open();
                 return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction([this.storeName], 'readonly');
-                    const store = transaction.objectStore(this.storeName);
-                    const request = store.getAll();
-
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
+                    const tx = this.db.transaction([this.storeName], 'readonly');
+                    const req = tx.objectStore(this.storeName).getAll();
+                    req.onsuccess = () => resolve(req.result || []);
+                    req.onerror = () => reject(req.error);
                 });
             }
 
-            async getImageById(id) {
-                await this.initDB();
+            async get(id) {
+                await this.open();
                 return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction([this.storeName], 'readonly');
-                    const store = transaction.objectStore(this.storeName);
-                    const request = store.get(id);
-
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
+                    const tx = this.db.transaction([this.storeName], 'readonly');
+                    const req = tx.objectStore(this.storeName).get(id);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
                 });
             }
 
-            async deleteImage(id) {
-                await this.initDB();
+            async delete(id) {
+                await this.open();
                 return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction([this.storeName], 'readwrite');
-                    const store = transaction.objectStore(this.storeName);
-                    const request = store.delete(id);
+                    const tx = this.db.transaction([this.storeName], 'readwrite');
+                    const req = tx.objectStore(this.storeName).delete(id);
+                    req.onsuccess = () => resolve();
+                    req.onerror = () => reject(req.error);
+                });
+            }
 
-                    request.onsuccess = () => resolve();
-                    request.onerror = () => reject(request.error);
+            async clear() {
+                await this.open();
+                return new Promise((resolve, reject) => {
+                    const tx = this.db.transaction([this.storeName], 'readwrite');
+                    const req = tx.objectStore(this.storeName).clear();
+                    req.onsuccess = () => resolve();
+                    req.onerror = () => reject(req.error);
                 });
             }
         }
 
-        // ImageHandler Class
-        class ImageHandler {
-            constructor(storage) {
-                this.storage = storage;
-                this.galleryElement = document.getElementById('gallery');
-            }
-
-            async uploadImages(files) {
-                const uploadBtn = document.getElementById('uploadBtn');
-                const status = document.getElementById('status');
-                uploadBtn.disabled = true;
-                uploadBtn.innerHTML = '<span class="loading"></span>பதிவேற்றுகிறோம்...';
-                status.textContent = 'படங்கள் பதிவேற்றப்படுகின்றன...';
-
-                const promises = Array.from(files).map(async (file) => {
-                    if (!file.type.startsWith('image/')) return;
-                    const reader = new FileReader();
-                    reader.readAsArrayBuffer(file);
-                    return new Promise((resolve) => {
-                        reader.onload = async () => {
-                            const blob = new Blob([reader.result], { type: file.type });
-                            // Use relative path as filename for folder structure
-                            const filename = file.webkitRelativePath || file.name;
-                            const tagsInput = prompt('இந்த படத்துக்கு டேக்குகளை உள்ளிடவும் (காமா உடன் பிரி, விரும்பாவிட்டால் Enter அழுத்தவும்): ' + filename);
-                            const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(t => t) : [];
-                            await this.storage.addImage(blob, filename, tags);
-                            resolve();
-                        };
-                    });
-                });
-                await Promise.all(promises);
-
-                uploadBtn.disabled = false;
-                uploadBtn.innerHTML = 'ஃபோல்டர் அல்லது படங்கள் பதிவேற்று (Upload Folder/Images)';
-                status.textContent = `${files.length} படங்கள் சேமிக்கப்பட்டன!`;
-            }
-
-            async loadImages() {
-                const images = await this.storage.getAllImages();
-                this.galleryElement.innerHTML = '';
-                images.forEach((image) => {
-                    this.createImageElement(image);
-                });
-                document.getElementById('downloadAllBtn').classList.add('hidden');
-            }
-
-            createImageElement(imageData, groupTitle = null) {
-                const item = document.createElement('div');
-                item.className = 'image-item';
-
-                const img = document.createElement('img');
-                const url = URL.createObjectURL(imageData.blob);
-                img.src = url;
-                img.alt = imageData.filename;
-                img.onload = () => URL.revokeObjectURL(url);
-
-                const filenameSpan = document.createElement('div');
-                filenameSpan.className = 'filename';
-                filenameSpan.textContent = imageData.filename;
-
-                const tagsSpan = document.createElement('div');
-                tagsSpan.className = 'tags';
-                tagsSpan.textContent = imageData.tags.length > 0 ? '#' + imageData.tags.join(' #') : 'இல்லை (No tags)';
-
-                const btnGroup = document.createElement('div');
-                btnGroup.className = 'btn-group';
-
-                const downloadBtn = document.createElement('button');
-                downloadBtn.className = 'download-btn';
-                downloadBtn.textContent = 'பதிவிறக்கு';
-                downloadBtn.addEventListener('click', () => this.downloadImage(imageData.id));
-
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'download-btn delete-btn';
-                deleteBtn.textContent = 'அழி';
-                deleteBtn.addEventListener('click', () => this.deleteImage(imageData.id, item));
-
-                btnGroup.appendChild(downloadBtn);
-                btnGroup.appendChild(deleteBtn);
-
-                item.appendChild(img);
-                item.appendChild(filenameSpan);
-                item.appendChild(tagsSpan);
-                item.appendChild(btnGroup);
-                item.dataset.filename = imageData.filename.toLowerCase();
-                item.dataset.tags = imageData.tags.join(' ').toLowerCase();
-                item.dataset.id = imageData.id;
-
-                return item;
-            }
-
-            async downloadImage(id) {
-                try {
-                    const image = await this.storage.getImageById(id);
-                    if (image) {
-                        const url = URL.createObjectURL(image.blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = image.filename;
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
-                    }
-                } catch (error) {
-                    console.error('Download error:', error);
-                    alert('பதிவிறக்கு பிழை: ' + error.message);
-                }
-            }
-
-            async deleteImage(id, itemElement) {
-                if (!confirm('இந்த படத்தை அழிக்க விரும்புகிறீர்களா?')) return;
-                try {
-                    await this.storage.deleteImage(id);
-                    itemElement.remove();
-                    document.getElementById('status').textContent = 'படம் அழிக்கப்பட்டது.';
-                } catch (error) {
-                    alert('அழிப்பு பிழை: ' + error.message);
-                }
-            }
-
-            async downloadAll() {
-                const items = document.querySelectorAll('.image-item');
-                if (items.length === 0) {
-                    alert('தேடல் முடிவுகள் இல்லை.');
-                    return;
-                }
-                const status = document.getElementById('status');
-                status.innerHTML = '<span class="loading"></span>அனைத்தையும் பதிவிறக்குகிறோம்...';
-                try {
-                    for (let item of items) {
-                        const id = parseInt(item.dataset.id);
-                        const image = await this.storage.getImageById(id);
-                        if (image) {
-                            const url = URL.createObjectURL(image.blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = image.filename;
-                            document.body.appendChild(a);
-                            a.click();
-                            document.body.removeChild(a);
-                            URL.revokeObjectURL(url);
-                            await new Promise(resolve => setTimeout(resolve, 300));
-                        }
-                    }
-                    status.textContent = `${items.length} படங்கள் பதிவிறக்கப்பட்டன!`;
-                } catch (error) {
-                    status.textContent = 'பதிவிறக்கு பிழை: ' + error.message;
-                }
-            }
-
-            displayGroupedImages(groupedImages) {
-                this.galleryElement.innerHTML = '';
-                let hasResults = false;
-                Object.entries(groupedImages).forEach(([term, images]) => {
-                    if (images.length > 0) {
-                        hasResults = true;
-                        const groupDiv = document.createElement('div');
-                        groupDiv.className = 'search-group';
-
-                        const title = document.createElement('h3');
-                        title.textContent = `தேடல்: "${term}" (${images.length} படங்கள்)`;
-                        groupDiv.appendChild(title);
-
-                        const groupGallery = document.createElement('div');
-                        groupGallery.className = 'gallery';
-
-                        images.sort((a, b) => a.filename.localeCompare(b.filename));
-
-                        images.forEach((image) => {
-                            const item = this.createImageElement(image, term);
-                            groupGallery.appendChild(item);
-                        });
-
-                        groupDiv.appendChild(groupGallery);
-                        this.galleryElement.appendChild(groupDiv);
-                    }
-                });
-
-                const downloadAllBtn = document.getElementById('downloadAllBtn');
-                if (hasResults) {
-                    downloadAllBtn.classList.remove('hidden');
-                } else {
-                    downloadAllBtn.classList.add('hidden');
-                }
-            }
-        }
-
-        // SearchManager Class
-        class SearchManager {
-            constructor(imageHandler) {
-                this.imageHandler = imageHandler;
-                this.searchInput = document.getElementById('searchInput');
-                this.allImages = [];
-                this.initSearch();
-            }
-
-            initSearch() {
-                this.searchInput.addEventListener('input', (e) => {
-                    this.filterImages(e.target.value.toLowerCase().trim());
-                });
-            }
-
-            async filterImages(query) {
-                if (!query) {
-                    await this.imageHandler.loadImages();
-                    return;
-                }
-
-                const terms = query.split(/\s+/).filter(term => term.length > 0);
-                if (terms.length === 0) {
-                    await this.imageHandler.loadImages();
-                    return;
-                }
-
-                const groupedImages = {};
-                terms.forEach(term => {
-                    groupedImages[term] = [];
-                });
-
-                this.allImages.forEach((image) => {
-                    const filenameLower = image.filename.toLowerCase();
-                    const tagsLower = image.tags.join(' ').toLowerCase();
-                    terms.forEach((term) => {
-                        if (filenameLower.includes(term) || tagsLower.includes(term)) {
-                            groupedImages[term].push(image);
-                        }
-                    });
-                });
-
-                this.imageHandler.displayGroupedImages(groupedImages);
-            }
-
-            setAllImages(images) {
-                this.allImages = images;
-            }
-        }
-
-        // Main App Class
-        class ImageSearchApp {
+        class App {
             constructor() {
-                this.storage = new StorageManager();
-                this.imageHandler = new ImageHandler(this.storage);
-                this.searchManager = new SearchManager(this.imageHandler);
+                this.db = new ImageDB();
+                this.images = [];
+                this.queue = [];
+                this.queueIndex = 0;
+                this.previewUrl = null;
+                this.modalImageId = null;
+                this.searchTerms = [];
+                this.searchResults = {};
                 this.init();
             }
 
+            $(id) { return document.getElementById(id); }
+
             async init() {
-                const images = await this.storage.getAllImages();
-                this.searchManager.setAllImages(images);
-                await this.imageHandler.loadImages();
-                this.attachEventListeners();
-                this.updateStatus('ஆப் தயார்! படங்களை பதிவேற்றவும்.');
+                try {
+                    await this.db.open();
+                    await this.loadImages();
+                    this.bindEvents();
+                    this.status('✅ ஆப் தயார்!');
+                } catch (e) {
+                    this.status('❌ Error: ' + e.message);
+                }
             }
 
-            attachEventListeners() {
-                const fileInput = document.getElementById('fileInput');
-                const uploadBtn = document.getElementById('uploadBtn');
-                const clearSearchBtn = document.getElementById('clearSearchBtn');
-                const downloadAllBtn = document.getElementById('downloadAllBtn');
+            bindEvents() {
+                this.$('fileInput').onchange = (e) => this.onFilesSelected(e.target.files);
+                this.$('uploadBtn').onclick = () => this.startUpload();
+                
+                // ✅ Multiple Search
+                let searchTimeout;
+                this.$('searchInput').oninput = (e) => {
+                    clearTimeout(searchTimeout);
+                    const v = e.target.value.trim();
+                    this.$('clearSearchBtn').classList.toggle('show', v.length > 0);
+                    
+                    searchTimeout = setTimeout(() => {
+                        this.multiSearch(v);
+                    }, 300);
+                };
+                
+                this.$('searchInput').onkeypress = (e) => {
+                    if (e.key === 'Enter') {
+                        this.multiSearch(this.$('searchInput').value.trim());
+                    }
+                };
+                
+                this.$('clearSearchBtn').onclick = () => {
+                    this.$('searchInput').value = '';
+                    this.$('clearSearchBtn').classList.remove('show');
+                    this.searchTerms = [];
+                    this.searchResults = {};
+                    this.updateSearchTags();
+                    this.renderGallery(this.images);
+                    this.$('totalResults').classList.add('hidden');
+                };
+                
+                this.$('clearAllBtn').onclick = () => this.clearAll();
+                this.$('downloadAllResults').onclick = () => this.downloadAllResults();
+                
+                this.$('saveBtn').onclick = () => this.saveImage();
+                this.$('skipBtn').onclick = () => this.skipImage();
+                this.$('imageNameInput').onkeypress = (e) => { if (e.key === 'Enter') this.saveImage(); };
+                
+                this.$('modalClose').onclick = () => this.closeModal();
+                this.$('imageModal').onclick = (e) => { if (e.target === e.currentTarget) this.closeModal(); };
+                this.$('modalDownload').onclick = () => this.downloadImage(this.modalImageId);
+                this.$('modalDelete').onclick = () => { this.deleteImage(this.modalImageId); this.closeModal(); };
 
-                uploadBtn.addEventListener('click', () => this.handleUpload(fileInput.files));
-                clearSearchBtn.addEventListener('click', () => this.clearSearch());
-                downloadAllBtn.addEventListener('click', () => this.imageHandler.downloadAll());
+                this.$('backupBtn').onclick = () => this.createBackup();
+                this.$('restoreInput').onchange = (e) => {
+                    if (e.target.files[0]) this.restoreBackup(e.target.files[0]);
+                };
             }
 
-            async handleUpload(files) {
-                if (!files.length) return;
-                await this.imageHandler.uploadImages(files);
-                const allImages = await this.storage.getAllImages();
-                this.searchManager.setAllImages(allImages);
-                await this.imageHandler.loadImages();
-                this.searchManager.filterImages('');
+            // ==================== MULTI SEARCH ====================
+            multiSearch(query) {
+                if (!query) {
+                    this.searchTerms = [];
+                    this.searchResults = {};
+                    this.updateSearchTags();
+                    this.renderGallery(this.images);
+                    this.$('totalResults').classList.add('hidden');
+                    return;
+                }
+
+                // ✅ Split by comma, space, or both
+                // "rohit sharma, virat kohli, bumrah" -> ["rohit sharma", "virat kohli", "bumrah"]
+                // "rohit virat bumrah" -> ["rohit", "virat", "bumrah"]
+                
+                let terms = [];
+                
+                if (query.includes(',')) {
+                    // Comma separated - each part is one search term
+                    terms = query.split(',').map(t => t.trim().toLowerCase()).filter(t => t);
+                } else {
+                    // Space separated - each word is one search term
+                    terms = query.split(/\s+/).map(t => t.trim().toLowerCase()).filter(t => t);
+                }
+
+                // Remove duplicates
+                this.searchTerms = [...new Set(terms)];
+                
+                this.updateSearchTags();
+                this.performSearch();
             }
 
-            clearSearch() {
-                document.getElementById('searchInput').value = '';
-                this.searchManager.filterImages('');
-                document.getElementById('downloadAllBtn').classList.add('hidden');
+            updateSearchTags() {
+                const container = this.$('searchTags');
+                container.innerHTML = '';
+
+                this.searchTerms.forEach((term, index) => {
+                    const tag = document.createElement('span');
+                    tag.className = 'search-tag';
+                    tag.innerHTML = `
+                        ${term}
+                        <button class="remove" data-index="${index}">×</button>
+                    `;
+                    
+                    tag.querySelector('.remove').onclick = () => {
+                        this.searchTerms.splice(index, 1);
+                        this.updateSearchTags();
+                        this.performSearch();
+                        
+                        // Update input
+                        this.$('searchInput').value = this.searchTerms.join(', ');
+                    };
+                    
+                    container.appendChild(tag);
+                });
             }
 
-            updateStatus(message) {
-                document.getElementById('status').textContent = message;
+            performSearch() {
+                if (this.searchTerms.length === 0) {
+                    this.renderGallery(this.images);
+                    this.$('totalResults').classList.add('hidden');
+                    return;
+                }
+
+                this.searchResults = {};
+                let totalFound = 0;
+                const foundIds = new Set();
+
+                // Search for each term
+                this.searchTerms.forEach(term => {
+                    this.searchResults[term] = [];
+                    
+                    this.images.forEach(img => {
+                        const filename = img.filename.toLowerCase();
+                        
+                        if (filename.includes(term)) {
+                            this.searchResults[term].push(img);
+                            
+                            if (!foundIds.has(img.id)) {
+                                foundIds.add(img.id);
+                                totalFound++;
+                            }
+                        }
+                    });
+                });
+
+                this.displaySearchResults(totalFound);
             }
+
+            displaySearchResults(totalFound) {
+                const gallery = this.$('gallery');
+                gallery.innerHTML = '';
+
+                // Show total results bar
+                if (totalFound > 0) {
+                    this.$('totalResults').classList.remove('hidden');
+                    this.$('totalFoundCount').textContent = totalFound;
+                } else {
+                    this.$('totalResults').classList.add('hidden');
+                }
+
+                // Group by search term
+                let hasResults = false;
+
+                this.searchTerms.forEach(term => {
+                    const results = this.searchResults[term] || [];
+                    
+                    if (results.length > 0) {
+                        hasResults = true;
+
+                        const group = document.createElement('div');
+                        group.className = 'search-group';
+                        group.dataset.term = term;
+                        
+                        group.innerHTML = `
+                            <div class="search-group-header">
+                                <h3>🔍 "${term}"</h3>
+                                <div>
+                                    <span class="count-badge">${results.length} படங்கள்</span>
+                                    <button class="download-group-btn" data-term="${term}">⬇️ இவற்றை பதிவிறக்கு</button>
+                                </div>
+                            </div>
+                        `;
+
+                        const grid = document.createElement('div');
+                        grid.className = 'gallery';
+                        
+                        results.forEach(img => {
+                            grid.appendChild(this.createCard(img, term));
+                        });
+
+                        group.appendChild(grid);
+                        gallery.appendChild(group);
+
+                        // Download group button
+                        group.querySelector('.download-group-btn').onclick = () => {
+                            this.downloadGroup(term);
+                        };
+                    }
+                });
+
+                // No results
+                if (!hasResults) {
+                    this.$('emptyState').classList.remove('hidden');
+                    gallery.innerHTML = '';
+                } else {
+                    this.$('emptyState').classList.add('hidden');
+                }
+
+                this.status(`🔍 ${this.searchTerms.length} தேடல்கள் - ${totalFound} படங்கள்`);
+            }
+
+            async downloadGroup(term) {
+                const results = this.searchResults[term] || [];
+                if (results.length === 0) return;
+
+                this.status(`⏳ "${term}" - ${results.length} படங்கள் பதிவிறக்கம்...`);
+
+                for (const img of results) {
+                    await this.downloadImage(img.id);
+                    await this.sleep(400);
+                }
+
+                this.status(`✅ "${term}" - ${results.length} படங்கள் பதிவிறக்கப்பட்டன!`);
+            }
+
+            async downloadAllResults() {
+                // Get all unique images from search results
+                const allIds = new Set();
+                const allImages = [];
+
+                this.searchTerms.forEach(term => {
+                    (this.searchResults[term] || []).forEach(img => {
+                        if (!allIds.has(img.id)) {
+                            allIds.add(img.id);
+                            allImages.push(img);
+                        }
+                    });
+                });
+
+                if (allImages.length === 0) return;
+
+                this.status(`⏳ ${allImages.length} படங்கள் பதிவிறக்கம்...`);
+
+                for (const img of allImages) {
+                    await this.downloadImage(img.id);
+                    await this.sleep(400);
+                }
+
+                this.status(`✅ ${allImages.length} படங்கள் பதிவிறக்கப்பட்டன!`);
+            }
+
+            // ==================== BACKUP ====================
+            async createBackup() {
+                if (this.images.length === 0) {
+                    alert('📭 படங்கள் இல்லை!');
+                    return;
+                }
+
+                this.$('backupModal').classList.add('show');
+                this.$('backupIcon').textContent = '📦';
+                this.$('backupTitle').textContent = 'Backup...';
+                this.$('backupProgress').style.width = '0%';
+                this.$('backupStatus').textContent = 'தயாராகிறது...';
+
+                try {
+                    const zip = new JSZip();
+                    const total = this.images.length;
+
+                    for (let i = 0; i < total; i++) {
+                        const img = this.images[i];
+                        const percent = ((i + 1) / total) * 100;
+                        
+                        this.$('backupProgress').style.width = percent + '%';
+                        this.$('backupStatus').textContent = `${i + 1}/${total}: ${img.filename}`;
+
+                        const arrayBuffer = await img.blob.arrayBuffer();
+                        zip.file(img.filename, arrayBuffer);
+
+                        await this.sleep(30);
+                    }
+
+                    this.$('backupStatus').textContent = 'ZIP உருவாக்கம்...';
+
+                    const zipBlob = await zip.generateAsync({ 
+                        type: 'blob',
+                        compression: 'DEFLATE',
+                        compressionOptions: { level: 6 }
+                    });
+
+                    const date = new Date().toISOString().split('T')[0];
+                    const filename = `photos_backup_${date}.zip`;
+                    
+                    const url = URL.createObjectURL(zipBlob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    a.click();
+                    URL.revokeObjectURL(url);
+
+                    this.$('backupIcon').textContent = '✅';
+                    this.$('backupTitle').textContent = 'வெற்றி!';
+                    this.$('backupStatus').textContent = `${total} படங்கள் - ${(zipBlob.size / 1024 / 1024).toFixed(2)} MB`;
+
+                    setTimeout(() => this.$('backupModal').classList.remove('show'), 2000);
+
+                } catch (e) {
+                    this.$('backupIcon').textContent = '❌';
+                    this.$('backupTitle').textContent = 'தோல்வி!';
+                    this.$('backupStatus').textContent = e.message;
+                    setTimeout(() => this.$('backupModal').classList.remove('show'), 3000);
+                }
+            }
+
+            // ==================== RESTORE ====================
+            async restoreBackup(file) {
+                this.$('restoreModal').classList.add('show');
+                this.$('restoreIcon').textContent = '📥';
+                this.$('restoreTitle').textContent = 'Restore...';
+                this.$('restoreProgress').style.width = '0%';
+                this.$('restoreStatus').textContent = 'படிக்கிறது...';
+
+                try {
+                    const zip = await JSZip.loadAsync(file);
+                    const allFiles = Object.keys(zip.files);
+                    
+                    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'];
+                    const imageFiles = allFiles.filter(name => {
+                        if (zip.files[name].dir) return false;
+                        const lowerName = name.toLowerCase();
+                        return imageExtensions.some(ext => lowerName.endsWith(ext));
+                    });
+
+                    if (imageFiles.length === 0) {
+                        throw new Error('படங்கள் இல்லை!');
+                    }
+
+                    const total = imageFiles.length;
+                    let restored = 0;
+
+                    for (let i = 0; i < total; i++) {
+                        const filePath = imageFiles[i];
+                        const filename = filePath.split('/').pop();
+                        
+                        this.$('restoreProgress').style.width = ((i + 1) / total * 100) + '%';
+                        this.$('restoreStatus').textContent = `${i + 1}/${total}: ${filename}`;
+
+                        try {
+                            const data = await zip.files[filePath].async('arraybuffer');
+                            const ext = filename.split('.').pop().toLowerCase();
+                            const mimeTypes = {
+                                'jpg': 'image/jpeg', 'jpeg': 'image/jpeg',
+                                'png': 'image/png', 'gif': 'image/gif',
+                                'webp': 'image/webp', 'bmp': 'image/bmp'
+                            };
+                            const blob = new Blob([data], { type: mimeTypes[ext] || 'image/jpeg' });
+
+                            await this.db.add({
+                                blob, filename,
+                                size: blob.size,
+                                date: Date.now()
+                            });
+                            restored++;
+                        } catch (e) {
+                            console.error('Error:', filePath, e);
+                        }
+
+                        await this.sleep(30);
+                    }
+
+                    this.$('restoreIcon').textContent = '✅';
+                    this.$('restoreTitle').textContent = 'வெற்றி!';
+                    this.$('restoreStatus').textContent = `${restored} படங்கள்`;
+
+                    await this.loadImages();
+                    setTimeout(() => this.$('restoreModal').classList.remove('show'), 2000);
+
+                } catch (e) {
+                    this.$('restoreIcon').textContent = '❌';
+                    this.$('restoreTitle').textContent = 'தோல்வி!';
+                    this.$('restoreStatus').textContent = e.message;
+                    setTimeout(() => this.$('restoreModal').classList.remove('show'), 3000);
+                }
+
+                this.$('restoreInput').value = '';
+            }
+
+            // ==================== UPLOAD ====================
+            isSystemId(name) {
+                const base = name.replace(/\.[^.]+$/, '');
+                return /^\d+$/.test(base);
+            }
+
+            getExt(name) {
+                const m = name.match(/\.[^.]+$/);
+                return m ? m[0] : '.jpg';
+            }
+
+            onFilesSelected(files) {
+                if (!files || files.length === 0) return;
+                
+                this.queue = Array.from(files).filter(f => f.type.startsWith('image/'));
+                
+                if (this.queue.length === 0) {
+                    this.status('❌ படங்கள் இல்லை');
+                    return;
+                }
+                
+                this.$('selectedInfo').textContent = `📁 ${this.queue.length} படங்கள்`;
+                this.$('selectedInfo').classList.remove('hidden');
+                this.$('uploadBtn').disabled = false;
+            }
+
+            startUpload() {
+                if (this.queue.length === 0) return;
+                this.queueIndex = 0;
+                this.$('uploadBtn').disabled = true;
+                this.$('progressSection').classList.remove('hidden');
+                this.showUploadModal();
+            }
+
+            showUploadModal() {
+                if (this.queueIndex >= this.queue.length) {
+                    this.finishUpload();
+                    return;
+                }
+                
+                const file = this.queue[this.queueIndex];
+                const total = this.queue.length;
+                const current = this.queueIndex + 1;
+                
+                this.$('progressFill').style.width = (current / total * 100) + '%';
+                this.$('progressText').textContent = `${current}/${total}`;
+                this.$('uploadCounter').textContent = `படம் ${current}/${total}`;
+                
+                if (this.previewUrl) URL.revokeObjectURL(this.previewUrl);
+                this.previewUrl = URL.createObjectURL(file);
+                this.$('previewImage').src = this.previewUrl;
+                
+                if (this.isSystemId(file.name)) {
+                    this.$('systemWarning').classList.remove('hidden');
+                    this.$('systemName').textContent = file.name;
+                    this.$('imageNameInput').value = '';
+                } else {
+                    this.$('systemWarning').classList.add('hidden');
+                    this.$('imageNameInput').value = file.name.replace(/\.[^.]+$/, '');
+                }
+                
+                this.$('uploadModal').classList.add('show');
+                setTimeout(() => this.$('imageNameInput').focus(), 100);
+            }
+
+            async saveImage() {
+                const file = this.queue[this.queueIndex];
+                let name = this.$('imageNameInput').value.trim();
+                
+                if (!name) {
+                    alert('📛 பெயர் உள்ளிடவும்!');
+                    return;
+                }
+                
+                const ext = this.getExt(file.name);
+                if (!name.includes('.')) name += ext;
+                
+                await this.saveFile(file, name);
+                this.queueIndex++;
+                this.showUploadModal();
+            }
+
+            async skipImage() {
+                const file = this.queue[this.queueIndex];
+                const ext = this.getExt(file.name);
+                const name = this.isSystemId(file.name) ? `Image_${Date.now()}${ext}` : file.name;
+                
+                await this.saveFile(file, name);
+                this.queueIndex++;
+                this.showUploadModal();
+            }
+
+            async saveFile(file, filename) {
+                try {
+                    const buffer = await file.arrayBuffer();
+                    const blob = new Blob([buffer], { type: file.type });
+                    
+                    await this.db.add({
+                        blob, filename,
+                        size: file.size,
+                        date: Date.now()
+                    });
+                } catch (e) {
+                    console.error('Save error:', e);
+                }
+            }
+
+            async finishUpload() {
+                this.$('uploadModal').classList.remove('show');
+                const count = this.queue.length;
+                
+                this.$('progressSection').classList.add('hidden');
+                this.$('selectedInfo').classList.add('hidden');
+                this.$('fileInput').value = '';
+                this.$('uploadBtn').disabled = true;
+                
+                this.queue = [];
+                if (this.previewUrl) URL.revokeObjectURL(this.previewUrl);
+                
+                await this.loadImages();
+                this.status(`✅ ${count} படங்கள் சேமிக்கப்பட்டன!`);
+            }
+
+            // ==================== GALLERY ====================
+            async loadImages() {
+                this.images = await this.db.getAll();
+                this.images.sort((a, b) => (b.date || 0) - (a.date || 0));
+                this.renderGallery(this.images);
+                this.updateStats();
+            }
+
+            renderGallery(images) {
+                const gallery = this.$('gallery');
+                gallery.innerHTML = '';
+                
+                this.$('emptyState').classList.toggle('hidden', images.length > 0);
+                this.$('totalResults').classList.add('hidden');
+                this.$('backupBtn').disabled = images.length === 0;
+                
+                images.forEach(img => gallery.appendChild(this.createCard(img)));
+            }
+
+            createCard(img, highlightTerm = null) {
+                const card = document.createElement('div');
+                card.className = 'image-item';
+                card.dataset.id = img.id;
+                
+                const url = URL.createObjectURL(img.blob);
+                
+                // Highlight matching term in filename
+                let displayName = img.filename;
+                if (highlightTerm) {
+                    const regex = new RegExp(`(${highlightTerm})`, 'gi');
+                    displayName = img.filename.replace(regex, '<mark style="background:#ffd700;padding:0 2px;border-radius:2px;">$1</mark>');
+                }
+                
+                card.innerHTML = `
+                    <img src="${url}" loading="lazy">
+                    <div class="filename">${displayName}</div>
+                    <div class="btn-group">
+                        <button class="btn btn-success">⬇️</button>
+                        <button class="btn btn-danger">🗑️</button>
+                    </div>
+                `;
+                
+                card.querySelector('img').onclick = () => this.openModal(img.id, url, img.filename);
+                card.querySelectorAll('.btn-group .btn')[0].onclick = (e) => { e.stopPropagation(); this.downloadImage(img.id); };
+                card.querySelectorAll('.btn-group .btn')[1].onclick = (e) => { e.stopPropagation(); this.deleteImage(img.id, card); };
+                
+                return card;
+            }
+
+            openModal(id, url, filename) {
+                this.modalImageId = id;
+                this.$('modalImage').src = url;
+                this.$('modalFilename').textContent = '📄 ' + filename;
+                this.$('imageModal').classList.add('show');
+            }
+
+            closeModal() {
+                this.$('imageModal').classList.remove('show');
+            }
+
+            async downloadImage(id) {
+                const img = await this.db.get(id);
+                if (!img) return;
+                
+                const url = URL.createObjectURL(img.blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = img.filename;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+
+            async deleteImage(id, card = null) {
+                const img = await this.db.get(id);
+                if (!img || !confirm(`"${img.filename}" அழிக்கவா?`)) return;
+                
+                await this.db.delete(id);
+                if (card) card.remove();
+                
+                this.images = this.images.filter(i => i.id !== id);
+                this.updateStats();
+                
+                if (this.images.length === 0) this.$('emptyState').classList.remove('hidden');
+            }
+
+            async clearAll() {
+                if (this.images.length === 0) return;
+                if (!confirm(`⚠️ ${this.images.length} படங்களை அழிக்கவா?`)) return;
+                
+                await this.db.clear();
+                this.images = [];
+                this.$('gallery').innerHTML = '';
+                this.$('emptyState').classList.remove('hidden');
+                this.$('totalResults').classList.add('hidden');
+                this.updateStats();
+            }
+
+            updateStats() {
+                this.$('totalImages').textContent = this.images.length;
+                const mb = (this.images.reduce((s, i) => s + (i.size || 0), 0) / 1024 / 1024).toFixed(2);
+                this.$('storageUsed').textContent = mb + ' MB';
+            }
+
+            status(msg) { this.$('status').textContent = msg; }
+            sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
         }
 
-        // Initialize app
-        new ImageSearchApp();
+        new App();
+    })();
     </script>
 </body>
 </html>
