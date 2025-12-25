@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
 <html lang="ta">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>படத் தேடல் ஆப்</title>
+    <title>ANBU IMAGE SEARCH</title>
     <meta name="theme-color" content="#667eea">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -78,7 +79,7 @@
             color: white;
             width: 100%;
             margin-bottom: 8px;
-            transition: transform 0.2s, opacity 0.2s;
+            transition: transform 0.2s;
         }
 
         .btn:active { transform: scale(0.95); }
@@ -88,16 +89,13 @@
         .btn-warning { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); }
         .btn-purple { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); }
         .btn-teal { background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%); }
-        .btn:disabled { background: #bdc3c7 !important; cursor: not-allowed; opacity: 0.7; }
+        .btn-blue { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }
+        .btn:disabled { background: #bdc3c7 !important; cursor: not-allowed; }
 
         .btn-row { display: flex; gap: 8px; }
         .btn-row .btn { flex: 1; margin: 0; }
 
-        .btn-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .btn-grid .btn { margin: 0; }
 
         .search-box {
@@ -136,8 +134,6 @@
             font-size: 10px;
             color: #888;
             margin-top: 5px;
-            text-align: left;
-            padding-left: 10px;
         }
 
         .search-tags {
@@ -168,9 +164,6 @@
             border-radius: 50%;
             cursor: pointer;
             font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .gallery {
@@ -194,6 +187,7 @@
             object-fit: cover;
             border-radius: 8px;
             cursor: pointer;
+            background: #f0f0f0;
         }
 
         .image-item .filename {
@@ -231,6 +225,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .search-group h3 {
@@ -239,7 +235,7 @@
             font-size: 14px;
         }
 
-        .search-group .count-badge {
+        .count-badge {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 3px 10px;
@@ -247,7 +243,7 @@
             font-size: 11px;
         }
 
-        .search-group .download-group-btn {
+        .download-group-btn {
             background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
             color: white;
             border: none;
@@ -296,6 +292,60 @@
 
         .progress-text { font-size: 11px; color: #666; }
 
+        /* Pagination Info */
+        .pagination-info {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .pagination-info .info-text {
+            font-size: 13px;
+        }
+
+        .pagination-info .page-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+
+        /* Load More Button */
+        .load-more-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .load-more-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .load-more-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.5);
+        }
+
+        .load-more-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* All Modals */
         .modal {
             display: none;
             position: fixed;
@@ -481,22 +531,89 @@
             align-items: center;
         }
 
-        .total-results .count {
-            font-size: 18px;
-            font-weight: bold;
-        }
+        .total-results .count { font-size: 18px; font-weight: bold; }
 
-        .total-results .actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .total-results .actions .btn {
+        .total-results .btn {
             width: auto;
             padding: 8px 15px;
             margin: 0;
             font-size: 12px;
         }
+
+        /* Password Modal */
+        .password-modal {
+            display: none;
+            position: fixed;
+            z-index: 1003;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        .password-modal.show { display: flex; }
+
+        .password-modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+        }
+
+        .password-modal-content h3 {
+            margin: 0 0 10px;
+            color: #e74c3c;
+            font-size: 18px;
+        }
+
+        .password-modal-content p {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+
+        .password-modal-content .lock-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .password-modal-content input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .password-modal-content input[type="password"]:focus {
+            outline: none;
+            border-color: #e74c3c;
+        }
+
+        .password-modal-content input[type="password"].error {
+            border-color: #e74c3c;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .password-error {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .password-error.show { display: block; }
 
         @media (min-width: 768px) {
             .gallery { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
@@ -513,6 +630,7 @@
             <span>💾 <span id="storageUsed">0 MB</span></span>
         </div>
         
+        <!-- Upload Section -->
         <div class="section">
             <div class="section-title">📤 படங்கள் சேர்</div>
             <input type="file" id="fileInput" accept="image/*" multiple>
@@ -529,44 +647,54 @@
             </div>
         </div>
 
+        <!-- Backup Section -->
         <div class="section backup-section">
             <div class="section-title">💾 Backup / Restore</div>
             <input type="file" id="restoreInput" accept=".zip">
-            
             <div class="btn-grid">
                 <button id="backupBtn" class="btn btn-purple">📦 Backup</button>
                 <label for="restoreInput" class="btn btn-teal">📥 Restore</label>
             </div>
         </div>
         
+        <!-- Search Section -->
         <div class="section">
             <div class="section-title">🔍 Multiple Search</div>
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="rohit, virat, bumrah, tilak...">
+                <input type="text" id="searchInput" placeholder="rohit, virat, bumrah...">
                 <button class="clear-btn" id="clearSearchBtn">✕</button>
             </div>
-            <div class="search-hint">
-                💡 Comma (,) அல்லது space உடன் பல பெயர்களை தேடலாம்
-            </div>
+            <div class="search-hint">💡 Comma உடன் பல பெயர்களை தேடலாம்</div>
             <div id="searchTags" class="search-tags"></div>
             
             <div class="btn-row" style="margin-top: 10px;">
-                <button id="clearAllBtn" class="btn btn-danger">🗑️ அனைத்தும் அழி</button>
+                <button id="clearAllBtn" class="btn btn-danger">🔒 அனைத்தும் அழி</button>
             </div>
         </div>
 
-        <!-- Total Results Bar -->
+        <!-- Pagination Info -->
+        <div id="paginationInfo" class="pagination-info hidden">
+            <span class="info-text">📷 காட்டப்படுகிறது: <strong id="showingCount">0</strong> / <span id="totalCount">0</span></span>
+            <span class="page-badge" id="pageBadge">Page 1</span>
+        </div>
+
+        <!-- Total Results (Search) -->
         <div id="totalResults" class="total-results hidden">
             <div>
-                <span>🔍 தேடல் முடிவுகள்:</span>
+                <span>🔍 முடிவுகள்: </span>
                 <span id="totalFoundCount" class="count">0</span>
             </div>
-            <div class="actions">
-                <button id="downloadAllResults" class="btn btn-warning">⬇️ அனைத்தும்</button>
-            </div>
+            <button id="downloadAllResults" class="btn btn-warning">⬇️ அனைத்தும்</button>
         </div>
         
         <div id="gallery" class="gallery"></div>
+
+        <!-- Load More Button -->
+        <div id="loadMoreContainer" class="load-more-container hidden">
+            <button id="loadMoreBtn" class="load-more-btn">
+                📥 மேலும் 30 படங்கள் காட்டு
+            </button>
+        </div>
         
         <div id="emptyState" class="empty-state">
             <div class="icon">📷</div>
@@ -576,6 +704,7 @@
         <p id="status" class="status">🔄 தயாராகிறது...</p>
     </div>
 
+    <!-- Image Modal -->
     <div id="imageModal" class="modal">
         <span class="modal-close" id="modalClose">×</span>
         <img id="modalImage" src="">
@@ -586,6 +715,7 @@
         </div>
     </div>
 
+    <!-- Upload Modal -->
     <div id="uploadModal" class="upload-modal">
         <div class="upload-modal-content">
             <h3>📝 படத்தின் பெயர்</h3>
@@ -605,6 +735,7 @@
         </div>
     </div>
 
+    <!-- Backup Modal -->
     <div id="backupModal" class="backup-modal">
         <div class="backup-modal-content">
             <div id="backupIcon" class="backup-icon">📦</div>
@@ -616,6 +747,7 @@
         </div>
     </div>
 
+    <!-- Restore Modal -->
     <div id="restoreModal" class="backup-modal">
         <div class="backup-modal-content">
             <div id="restoreIcon" class="backup-icon">📥</div>
@@ -627,21 +759,42 @@
         </div>
     </div>
 
+    <!-- Password Modal -->
+    <div id="passwordModal" class="password-modal">
+        <div class="password-modal-content">
+            <div class="lock-icon">🔐</div>
+            <h3>⚠️ Password தேவை</h3>
+            <p>அனைத்து படங்களையும் அழிக்க Password உள்ளிடவும்</p>
+            <input type="password" id="passwordInput" placeholder="Password உள்ளிடவும்">
+            <div id="passwordError" class="password-error">❌ தவறான Password!</div>
+            <div class="btn-row">
+                <button id="passwordCancel" class="btn btn-warning">❌ ரத்து</button>
+                <button id="passwordConfirm" class="btn btn-danger">🗑️ அழி</button>
+            </div>
+        </div>
+    </div>
+
     <script>
     (function() {
+        // ========== CONFIG ==========
+        const DELETE_PASSWORD = 'anbu@12345';
+        const IMAGES_PER_PAGE = 30; // ✅ ஒரு நேரத்தில் 30 படங்கள் மட்டும்
+
+        // ========== DATABASE ==========
         class ImageDB {
             constructor() {
-                this.dbName = 'PhotoAppDB3';
+                this.dbName = 'PhotoAppDB6';
                 this.storeName = 'images';
                 this.db = null;
             }
 
             async open() {
-                if (this.db) return;
+                if (this.db) return this.db;
+                
                 return new Promise((resolve, reject) => {
                     const req = indexedDB.open(this.dbName, 1);
                     req.onerror = () => reject(req.error);
-                    req.onsuccess = () => { this.db = req.result; resolve(); };
+                    req.onsuccess = () => { this.db = req.result; resolve(this.db); };
                     req.onupgradeneeded = (e) => {
                         const db = e.target.result;
                         if (!db.objectStoreNames.contains(this.storeName)) {
@@ -652,9 +805,9 @@
             }
 
             async add(data) {
-                await this.open();
+                const db = await this.open();
                 return new Promise((resolve, reject) => {
-                    const tx = this.db.transaction([this.storeName], 'readwrite');
+                    const tx = db.transaction([this.storeName], 'readwrite');
                     const req = tx.objectStore(this.storeName).add(data);
                     req.onsuccess = () => resolve(req.result);
                     req.onerror = () => reject(req.error);
@@ -662,9 +815,9 @@
             }
 
             async getAll() {
-                await this.open();
+                const db = await this.open();
                 return new Promise((resolve, reject) => {
-                    const tx = this.db.transaction([this.storeName], 'readonly');
+                    const tx = db.transaction([this.storeName], 'readonly');
                     const req = tx.objectStore(this.storeName).getAll();
                     req.onsuccess = () => resolve(req.result || []);
                     req.onerror = () => reject(req.error);
@@ -672,9 +825,9 @@
             }
 
             async get(id) {
-                await this.open();
+                const db = await this.open();
                 return new Promise((resolve, reject) => {
-                    const tx = this.db.transaction([this.storeName], 'readonly');
+                    const tx = db.transaction([this.storeName], 'readonly');
                     const req = tx.objectStore(this.storeName).get(id);
                     req.onsuccess = () => resolve(req.result);
                     req.onerror = () => reject(req.error);
@@ -682,9 +835,9 @@
             }
 
             async delete(id) {
-                await this.open();
+                const db = await this.open();
                 return new Promise((resolve, reject) => {
-                    const tx = this.db.transaction([this.storeName], 'readwrite');
+                    const tx = db.transaction([this.storeName], 'readwrite');
                     const req = tx.objectStore(this.storeName).delete(id);
                     req.onsuccess = () => resolve();
                     req.onerror = () => reject(req.error);
@@ -692,9 +845,9 @@
             }
 
             async clear() {
-                await this.open();
+                const db = await this.open();
                 return new Promise((resolve, reject) => {
-                    const tx = this.db.transaction([this.storeName], 'readwrite');
+                    const tx = db.transaction([this.storeName], 'readwrite');
                     const req = tx.objectStore(this.storeName).clear();
                     req.onsuccess = () => resolve();
                     req.onerror = () => reject(req.error);
@@ -702,16 +855,21 @@
             }
         }
 
+        // ========== MAIN APP ==========
         class App {
             constructor() {
                 this.db = new ImageDB();
                 this.images = [];
-                this.queue = [];
-                this.queueIndex = 0;
-                this.previewUrl = null;
+                this.displayedCount = 0; // ✅ தற்போது காட்டப்படும் எண்ணிக்கை
+                this.uploadQueue = [];
+                this.uploadIndex = 0;
+                this.currentPreviewUrl = null;
+                this.currentFile = null;
                 this.modalImageId = null;
                 this.searchTerms = [];
                 this.searchResults = {};
+                this.isSearchMode = false;
+                
                 this.init();
             }
 
@@ -729,85 +887,473 @@
             }
 
             bindEvents() {
-                this.$('fileInput').onchange = (e) => this.onFilesSelected(e.target.files);
-                this.$('uploadBtn').onclick = () => this.startUpload();
-                
-                // ✅ Multiple Search
+                // File Selection
+                this.$('fileInput').addEventListener('change', (e) => {
+                    if (e.target.files?.length > 0) {
+                        this.onFilesSelected(e.target.files);
+                    }
+                });
+
+                // Upload
+                this.$('uploadBtn').addEventListener('click', () => this.startUpload());
+                this.$('saveBtn').addEventListener('click', () => this.saveCurrentImage());
+                this.$('skipBtn').addEventListener('click', () => this.skipCurrentImage());
+                this.$('imageNameInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.saveCurrentImage();
+                });
+
+                // Search
                 let searchTimeout;
-                this.$('searchInput').oninput = (e) => {
+                this.$('searchInput').addEventListener('input', (e) => {
                     clearTimeout(searchTimeout);
                     const v = e.target.value.trim();
                     this.$('clearSearchBtn').classList.toggle('show', v.length > 0);
-                    
-                    searchTimeout = setTimeout(() => {
-                        this.multiSearch(v);
-                    }, 300);
-                };
-                
-                this.$('searchInput').onkeypress = (e) => {
-                    if (e.key === 'Enter') {
-                        this.multiSearch(this.$('searchInput').value.trim());
-                    }
-                };
-                
-                this.$('clearSearchBtn').onclick = () => {
+                    searchTimeout = setTimeout(() => this.multiSearch(v), 300);
+                });
+
+                this.$('clearSearchBtn').addEventListener('click', () => {
                     this.$('searchInput').value = '';
                     this.$('clearSearchBtn').classList.remove('show');
-                    this.searchTerms = [];
-                    this.searchResults = {};
-                    this.updateSearchTags();
-                    this.renderGallery(this.images);
-                    this.$('totalResults').classList.add('hidden');
-                };
-                
-                this.$('clearAllBtn').onclick = () => this.clearAll();
-                this.$('downloadAllResults').onclick = () => this.downloadAllResults();
-                
-                this.$('saveBtn').onclick = () => this.saveImage();
-                this.$('skipBtn').onclick = () => this.skipImage();
-                this.$('imageNameInput').onkeypress = (e) => { if (e.key === 'Enter') this.saveImage(); };
-                
-                this.$('modalClose').onclick = () => this.closeModal();
-                this.$('imageModal').onclick = (e) => { if (e.target === e.currentTarget) this.closeModal(); };
-                this.$('modalDownload').onclick = () => this.downloadImage(this.modalImageId);
-                this.$('modalDelete').onclick = () => { this.deleteImage(this.modalImageId); this.closeModal(); };
+                    this.clearSearch();
+                });
 
-                this.$('backupBtn').onclick = () => this.createBackup();
-                this.$('restoreInput').onchange = (e) => {
+                // ✅ Load More Button
+                this.$('loadMoreBtn').addEventListener('click', () => this.loadMore());
+
+                // Clear All with Password
+                this.$('clearAllBtn').addEventListener('click', () => this.showPasswordModal());
+
+                // Password Modal
+                this.$('passwordCancel').addEventListener('click', () => this.hidePasswordModal());
+                this.$('passwordConfirm').addEventListener('click', () => this.verifyPassword());
+                this.$('passwordInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.verifyPassword();
+                });
+
+                // Download All
+                this.$('downloadAllResults').addEventListener('click', () => this.downloadAllResults());
+
+                // Image Modal
+                this.$('modalClose').addEventListener('click', () => this.closeModal());
+                this.$('imageModal').addEventListener('click', (e) => {
+                    if (e.target === e.currentTarget) this.closeModal();
+                });
+                this.$('modalDownload').addEventListener('click', () => this.downloadImage(this.modalImageId));
+                this.$('modalDelete').addEventListener('click', () => {
+                    this.deleteImage(this.modalImageId);
+                    this.closeModal();
+                });
+
+                // Backup/Restore
+                this.$('backupBtn').addEventListener('click', () => this.createBackup());
+                this.$('restoreInput').addEventListener('change', (e) => {
                     if (e.target.files[0]) this.restoreBackup(e.target.files[0]);
-                };
+                });
             }
 
-            // ==================== MULTI SEARCH ====================
-            multiSearch(query) {
-                if (!query) {
-                    this.searchTerms = [];
-                    this.searchResults = {};
-                    this.updateSearchTags();
-                    this.renderGallery(this.images);
-                    this.$('totalResults').classList.add('hidden');
+            // ==================== PAGINATION ====================
+            updatePaginationInfo() {
+                const total = this.images.length;
+                
+                if (total === 0 || this.isSearchMode) {
+                    this.$('paginationInfo').classList.add('hidden');
+                    this.$('loadMoreContainer').classList.add('hidden');
                     return;
                 }
 
-                // ✅ Split by comma, space, or both
-                // "rohit sharma, virat kohli, bumrah" -> ["rohit sharma", "virat kohli", "bumrah"]
-                // "rohit virat bumrah" -> ["rohit", "virat", "bumrah"]
-                
-                let terms = [];
-                
-                if (query.includes(',')) {
-                    // Comma separated - each part is one search term
-                    terms = query.split(',').map(t => t.trim().toLowerCase()).filter(t => t);
+                this.$('paginationInfo').classList.remove('hidden');
+                this.$('showingCount').textContent = Math.min(this.displayedCount, total);
+                this.$('totalCount').textContent = total;
+
+                const currentPage = Math.ceil(this.displayedCount / IMAGES_PER_PAGE);
+                const totalPages = Math.ceil(total / IMAGES_PER_PAGE);
+                this.$('pageBadge').textContent = `Page ${currentPage} / ${totalPages}`;
+
+                // Show/Hide Load More button
+                if (this.displayedCount < total) {
+                    this.$('loadMoreContainer').classList.remove('hidden');
+                    const remaining = total - this.displayedCount;
+                    this.$('loadMoreBtn').textContent = `📥 மேலும் ${Math.min(remaining, IMAGES_PER_PAGE)} படங்கள் காட்டு`;
                 } else {
-                    // Space separated - each word is one search term
-                    terms = query.split(/\s+/).map(t => t.trim().toLowerCase()).filter(t => t);
+                    this.$('loadMoreContainer').classList.add('hidden');
+                }
+            }
+
+            loadMore() {
+                const gallery = this.$('gallery');
+                const startIndex = this.displayedCount;
+                const endIndex = Math.min(startIndex + IMAGES_PER_PAGE, this.images.length);
+
+                for (let i = startIndex; i < endIndex; i++) {
+                    const card = this.createImageCard(this.images[i]);
+                    if (card) gallery.appendChild(card);
                 }
 
-                // Remove duplicates
-                this.searchTerms = [...new Set(terms)];
+                this.displayedCount = endIndex;
+                this.updatePaginationInfo();
+
+                this.status(`📷 ${this.displayedCount} / ${this.images.length} படங்கள் காட்டப்படுகின்றன`);
+            }
+
+            // ==================== PASSWORD MODAL ====================
+            showPasswordModal() {
+                if (this.images.length === 0) {
+                    this.status('அழிக்க படங்கள் இல்லை');
+                    return;
+                }
+
+                this.$('passwordModal').classList.add('show');
+                this.$('passwordInput').value = '';
+                this.$('passwordInput').classList.remove('error');
+                this.$('passwordError').classList.remove('show');
+                setTimeout(() => this.$('passwordInput').focus(), 100);
+            }
+
+            hidePasswordModal() {
+                this.$('passwordModal').classList.remove('show');
+                this.$('passwordInput').value = '';
+                this.$('passwordError').classList.remove('show');
+            }
+
+            async verifyPassword() {
+                const enteredPassword = this.$('passwordInput').value;
+
+                if (enteredPassword === DELETE_PASSWORD) {
+                    this.hidePasswordModal();
+                    await this.clearAllImages();
+                } else {
+                    this.$('passwordInput').classList.add('error');
+                    this.$('passwordError').classList.add('show');
+                    this.$('passwordInput').value = '';
+                    this.$('passwordInput').focus();
+                    setTimeout(() => this.$('passwordInput').classList.remove('error'), 500);
+                }
+            }
+
+            async clearAllImages() {
+                const count = this.images.length;
+
+                try {
+                    await this.db.clear();
+                    this.images = [];
+                    this.displayedCount = 0;
+                    this.$('gallery').innerHTML = '';
+                    this.$('emptyState').classList.remove('hidden');
+                    this.$('totalResults').classList.add('hidden');
+                    this.$('paginationInfo').classList.add('hidden');
+                    this.$('loadMoreContainer').classList.add('hidden');
+                    this.updateStats();
+                    this.status(`🗑️ ${count} படங்கள் அழிக்கப்பட்டன!`);
+                } catch (e) {
+                    this.status('❌ அழிப்பு பிழை: ' + e.message);
+                }
+            }
+
+            // ==================== FILE SELECTION ====================
+            onFilesSelected(files) {
+                const imageFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
                 
+                if (imageFiles.length === 0) {
+                    this.status('❌ படங்கள் தேர்வு செய்யவில்லை!');
+                    return;
+                }
+
+                this.uploadQueue = imageFiles;
+                this.$('selectedInfo').textContent = `📁 ${imageFiles.length} படங்கள் தேர்வு`;
+                this.$('selectedInfo').classList.remove('hidden');
+                this.$('uploadBtn').disabled = false;
+                this.status(`✅ ${imageFiles.length} படங்கள் தயார்`);
+            }
+
+            // ==================== UPLOAD ====================
+            startUpload() {
+                if (this.uploadQueue.length === 0) return;
+
+                this.uploadIndex = 0;
+                this.$('uploadBtn').disabled = true;
+                this.$('progressSection').classList.remove('hidden');
+                this.showNextUploadModal();
+            }
+
+            showNextUploadModal() {
+                if (this.uploadIndex >= this.uploadQueue.length) {
+                    this.finishUpload();
+                    return;
+                }
+
+                this.currentFile = this.uploadQueue[this.uploadIndex];
+                const total = this.uploadQueue.length;
+                const current = this.uploadIndex + 1;
+
+                const percent = (current / total) * 100;
+                this.$('progressFill').style.width = percent + '%';
+                this.$('progressText').textContent = `${current} / ${total}`;
+                this.$('uploadCounter').textContent = `படம் ${current} / ${total}`;
+
+                if (this.currentPreviewUrl) URL.revokeObjectURL(this.currentPreviewUrl);
+                this.currentPreviewUrl = URL.createObjectURL(this.currentFile);
+                this.$('previewImage').src = this.currentPreviewUrl;
+
+                const isSystem = this.isSystemId(this.currentFile.name);
+                
+                if (isSystem) {
+                    this.$('systemWarning').classList.remove('hidden');
+                    this.$('systemName').textContent = this.currentFile.name;
+                    this.$('imageNameInput').value = '';
+                } else {
+                    this.$('systemWarning').classList.add('hidden');
+                    this.$('imageNameInput').value = this.currentFile.name.replace(/\.[^.]+$/, '');
+                }
+
+                this.$('uploadModal').classList.add('show');
+                setTimeout(() => {
+                    this.$('imageNameInput').focus();
+                    this.$('imageNameInput').select();
+                }, 100);
+            }
+
+            isSystemId(name) {
+                const baseName = name.replace(/\.[^.]+$/, '');
+                return /^\d+$/.test(baseName);
+            }
+
+            getExtension(name) {
+                const match = name.match(/\.[^.]+$/);
+                return match ? match[0].toLowerCase() : '.jpg';
+            }
+
+            async saveCurrentImage() {
+                let filename = this.$('imageNameInput').value.trim();
+                
+                if (!filename) {
+                    alert('📛 படத்தின் பெயர் உள்ளிடவும்!');
+                    this.$('imageNameInput').focus();
+                    return;
+                }
+
+                const ext = this.getExtension(this.currentFile.name);
+                if (!filename.toLowerCase().endsWith(ext)) filename += ext;
+
+                await this.saveFileToDatabase(this.currentFile, filename);
+                this.uploadIndex++;
+                this.showNextUploadModal();
+            }
+
+            async skipCurrentImage() {
+                const ext = this.getExtension(this.currentFile.name);
+                let filename = this.isSystemId(this.currentFile.name) 
+                    ? `Image_${Date.now()}${ext}` 
+                    : this.currentFile.name;
+
+                await this.saveFileToDatabase(this.currentFile, filename);
+                this.uploadIndex++;
+                this.showNextUploadModal();
+            }
+
+            async saveFileToDatabase(file, filename) {
+                this.status(`⏳ "${filename}" சேமிக்கப்படுகிறது...`);
+
+                try {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const blob = new Blob([arrayBuffer], { type: file.type });
+
+                    await this.db.add({
+                        blob, filename,
+                        size: blob.size,
+                        type: file.type,
+                        date: Date.now()
+                    });
+                } catch (error) {
+                    this.status(`❌ சேமிப்பு பிழை: ${filename}`);
+                }
+            }
+
+            async finishUpload() {
+                this.$('uploadModal').classList.remove('show');
+                
+                if (this.currentPreviewUrl) {
+                    URL.revokeObjectURL(this.currentPreviewUrl);
+                    this.currentPreviewUrl = null;
+                }
+
+                const count = this.uploadQueue.length;
+                
+                this.$('progressSection').classList.add('hidden');
+                this.$('selectedInfo').classList.add('hidden');
+                this.$('fileInput').value = '';
+                this.$('uploadBtn').disabled = true;
+                
+                this.uploadQueue = [];
+                this.uploadIndex = 0;
+                this.currentFile = null;
+
+                await this.loadImages();
+                this.status(`✅ ${count} படங்கள் சேமிக்கப்பட்டன!`);
+            }
+
+            // ==================== GALLERY ====================
+            async loadImages() {
+                try {
+                    this.images = await this.db.getAll();
+                    this.images.sort((a, b) => (b.date || 0) - (a.date || 0));
+                    this.isSearchMode = false;
+                    this.renderGallery();
+                    this.updateStats();
+                } catch (error) {
+                    this.status('❌ படங்கள் ஏற்ற முடியவில்லை');
+                }
+            }
+
+            renderGallery() {
+                const gallery = this.$('gallery');
+                gallery.innerHTML = '';
+                this.displayedCount = 0;
+
+                if (!this.images || this.images.length === 0) {
+                    this.$('emptyState').classList.remove('hidden');
+                    this.$('backupBtn').disabled = true;
+                    this.$('paginationInfo').classList.add('hidden');
+                    this.$('loadMoreContainer').classList.add('hidden');
+                    return;
+                }
+
+                this.$('emptyState').classList.add('hidden');
+                this.$('backupBtn').disabled = false;
+                this.$('totalResults').classList.add('hidden');
+
+                // ✅ முதல் 30 படங்கள் மட்டும் காட்டு
+                const initialCount = Math.min(IMAGES_PER_PAGE, this.images.length);
+                
+                for (let i = 0; i < initialCount; i++) {
+                    const card = this.createImageCard(this.images[i]);
+                    if (card) gallery.appendChild(card);
+                }
+
+                this.displayedCount = initialCount;
+                this.updatePaginationInfo();
+            }
+
+            createImageCard(img, highlightTerm = null) {
+                if (!img || !img.blob) return null;
+
+                const card = document.createElement('div');
+                card.className = 'image-item';
+                card.dataset.id = img.id;
+
+                let imgUrl;
+                try {
+                    imgUrl = URL.createObjectURL(img.blob);
+                } catch (e) {
+                    return null;
+                }
+
+                let displayName = img.filename;
+                if (highlightTerm) {
+                    const regex = new RegExp(`(${highlightTerm})`, 'gi');
+                    displayName = img.filename.replace(regex, '<mark style="background:#ffd700;padding:0 2px;border-radius:2px;">$1</mark>');
+                }
+
+                card.innerHTML = `
+                    <img src="${imgUrl}" loading="lazy" alt="${img.filename}">
+                    <div class="filename">${displayName}</div>
+                    <div class="btn-group">
+                        <button class="btn btn-success dl-btn">⬇️</button>
+                        <button class="btn btn-danger del-btn">🗑️</button>
+                    </div>
+                `;
+
+                card.querySelector('img').onclick = () => this.openModal(img.id, imgUrl, img.filename);
+                card.querySelector('.dl-btn').onclick = (e) => { e.stopPropagation(); this.downloadImage(img.id); };
+                card.querySelector('.del-btn').onclick = (e) => { e.stopPropagation(); this.deleteImage(img.id, card); };
+
+                return card;
+            }
+
+            openModal(id, url, filename) {
+                this.modalImageId = id;
+                this.$('modalImage').src = url;
+                this.$('modalFilename').textContent = '📄 ' + filename;
+                this.$('imageModal').classList.add('show');
+            }
+
+            closeModal() {
+                this.$('imageModal').classList.remove('show');
+                this.modalImageId = null;
+            }
+
+            async downloadImage(id) {
+                try {
+                    const img = await this.db.get(id);
+                    if (!img) return;
+
+                    const url = URL.createObjectURL(img.blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = img.filename;
+                    a.click();
+                    URL.revokeObjectURL(url);
+
+                    this.status(`✅ "${img.filename}" பதிவிறக்கப்பட்டது`);
+                } catch (e) {
+                    console.error('Download error:', e);
+                }
+            }
+
+            async deleteImage(id, card = null) {
+                try {
+                    const img = await this.db.get(id);
+                    if (!img || !confirm(`"${img.filename}" அழிக்கவா?`)) return;
+
+                    await this.db.delete(id);
+
+                    if (card) card.remove();
+                    else document.querySelector(`.image-item[data-id="${id}"]`)?.remove();
+
+                    this.images = this.images.filter(i => i.id !== id);
+                    this.displayedCount = Math.max(0, this.displayedCount - 1);
+                    this.updateStats();
+                    this.updatePaginationInfo();
+
+                    if (this.images.length === 0) {
+                        this.$('emptyState').classList.remove('hidden');
+                    }
+
+                    this.status(`🗑️ "${img.filename}" அழிக்கப்பட்டது`);
+                } catch (e) {
+                    console.error('Delete error:', e);
+                }
+            }
+
+            updateStats() {
+                this.$('totalImages').textContent = this.images.length;
+                const mb = (this.images.reduce((s, i) => s + (i.size || 0), 0) / 1024 / 1024).toFixed(2);
+                this.$('storageUsed').textContent = mb + ' MB';
+            }
+
+            // ==================== SEARCH ====================
+            multiSearch(query) {
+                if (!query) {
+                    this.clearSearch();
+                    return;
+                }
+
+                let terms = query.includes(',')
+                    ? query.split(',').map(t => t.trim().toLowerCase()).filter(t => t)
+                    : query.split(/\s+/).map(t => t.trim().toLowerCase()).filter(t => t);
+
+                this.searchTerms = [...new Set(terms)];
+                this.isSearchMode = true;
                 this.updateSearchTags();
                 this.performSearch();
+            }
+
+            clearSearch() {
+                this.searchTerms = [];
+                this.searchResults = {};
+                this.isSearchMode = false;
+                this.updateSearchTags();
+                this.renderGallery();
+                this.$('totalResults').classList.add('hidden');
             }
 
             updateSearchTags() {
@@ -817,28 +1363,22 @@
                 this.searchTerms.forEach((term, index) => {
                     const tag = document.createElement('span');
                     tag.className = 'search-tag';
-                    tag.innerHTML = `
-                        ${term}
-                        <button class="remove" data-index="${index}">×</button>
-                    `;
-                    
+                    tag.innerHTML = `${term} <button class="remove">×</button>`;
+
                     tag.querySelector('.remove').onclick = () => {
                         this.searchTerms.splice(index, 1);
-                        this.updateSearchTags();
-                        this.performSearch();
-                        
-                        // Update input
                         this.$('searchInput').value = this.searchTerms.join(', ');
+                        this.updateSearchTags();
+                        this.searchTerms.length > 0 ? this.performSearch() : this.clearSearch();
                     };
-                    
+
                     container.appendChild(tag);
                 });
             }
 
             performSearch() {
                 if (this.searchTerms.length === 0) {
-                    this.renderGallery(this.images);
-                    this.$('totalResults').classList.add('hidden');
+                    this.renderGallery();
                     return;
                 }
 
@@ -846,16 +1386,13 @@
                 let totalFound = 0;
                 const foundIds = new Set();
 
-                // Search for each term
                 this.searchTerms.forEach(term => {
                     this.searchResults[term] = [];
-                    
+
                     this.images.forEach(img => {
-                        const filename = img.filename.toLowerCase();
-                        
+                        const filename = (img.filename || '').toLowerCase();
                         if (filename.includes(term)) {
                             this.searchResults[term].push(img);
-                            
                             if (!foundIds.has(img.id)) {
                                 foundIds.add(img.id);
                                 totalFound++;
@@ -871,61 +1408,50 @@
                 const gallery = this.$('gallery');
                 gallery.innerHTML = '';
 
-                // Show total results bar
+                // Hide pagination for search
+                this.$('paginationInfo').classList.add('hidden');
+                this.$('loadMoreContainer').classList.add('hidden');
+
                 if (totalFound > 0) {
                     this.$('totalResults').classList.remove('hidden');
                     this.$('totalFoundCount').textContent = totalFound;
+                    this.$('emptyState').classList.add('hidden');
                 } else {
                     this.$('totalResults').classList.add('hidden');
+                    this.$('emptyState').classList.remove('hidden');
+                    return;
                 }
-
-                // Group by search term
-                let hasResults = false;
 
                 this.searchTerms.forEach(term => {
                     const results = this.searchResults[term] || [];
-                    
-                    if (results.length > 0) {
-                        hasResults = true;
+                    if (results.length === 0) return;
 
-                        const group = document.createElement('div');
-                        group.className = 'search-group';
-                        group.dataset.term = term;
-                        
-                        group.innerHTML = `
-                            <div class="search-group-header">
-                                <h3>🔍 "${term}"</h3>
-                                <div>
-                                    <span class="count-badge">${results.length} படங்கள்</span>
-                                    <button class="download-group-btn" data-term="${term}">⬇️ இவற்றை பதிவிறக்கு</button>
-                                </div>
+                    const group = document.createElement('div');
+                    group.className = 'search-group';
+
+                    group.innerHTML = `
+                        <div class="search-group-header">
+                            <h3>🔍 "${term}"</h3>
+                            <div>
+                                <span class="count-badge">${results.length}</span>
+                                <button class="download-group-btn">⬇️ பதிவிறக்கு</button>
                             </div>
-                        `;
+                        </div>
+                    `;
 
-                        const grid = document.createElement('div');
-                        grid.className = 'gallery';
-                        
-                        results.forEach(img => {
-                            grid.appendChild(this.createCard(img, term));
-                        });
+                    const grid = document.createElement('div');
+                    grid.className = 'gallery';
 
-                        group.appendChild(grid);
-                        gallery.appendChild(group);
+                    results.forEach(img => {
+                        const card = this.createImageCard(img, term);
+                        if (card) grid.appendChild(card);
+                    });
 
-                        // Download group button
-                        group.querySelector('.download-group-btn').onclick = () => {
-                            this.downloadGroup(term);
-                        };
-                    }
+                    group.appendChild(grid);
+                    gallery.appendChild(group);
+
+                    group.querySelector('.download-group-btn').onclick = () => this.downloadGroup(term);
                 });
-
-                // No results
-                if (!hasResults) {
-                    this.$('emptyState').classList.remove('hidden');
-                    gallery.innerHTML = '';
-                } else {
-                    this.$('emptyState').classList.add('hidden');
-                }
 
                 this.status(`🔍 ${this.searchTerms.length} தேடல்கள் - ${totalFound} படங்கள்`);
             }
@@ -934,7 +1460,7 @@
                 const results = this.searchResults[term] || [];
                 if (results.length === 0) return;
 
-                this.status(`⏳ "${term}" - ${results.length} படங்கள் பதிவிறக்கம்...`);
+                this.status(`⏳ "${term}" - ${results.length} படங்கள்...`);
 
                 for (const img of results) {
                     await this.downloadImage(img.id);
@@ -945,7 +1471,6 @@
             }
 
             async downloadAllResults() {
-                // Get all unique images from search results
                 const allIds = new Set();
                 const allImages = [];
 
@@ -960,7 +1485,7 @@
 
                 if (allImages.length === 0) return;
 
-                this.status(`⏳ ${allImages.length} படங்கள் பதிவிறக்கம்...`);
+                this.status(`⏳ ${allImages.length} படங்கள்...`);
 
                 for (const img of allImages) {
                     await this.downloadImage(img.id);
@@ -990,7 +1515,7 @@
                     for (let i = 0; i < total; i++) {
                         const img = this.images[i];
                         const percent = ((i + 1) / total) * 100;
-                        
+
                         this.$('backupProgress').style.width = percent + '%';
                         this.$('backupStatus').textContent = `${i + 1}/${total}: ${img.filename}`;
 
@@ -1002,21 +1527,17 @@
 
                     this.$('backupStatus').textContent = 'ZIP உருவாக்கம்...';
 
-                    const zipBlob = await zip.generateAsync({ 
+                    const zipBlob = await zip.generateAsync({
                         type: 'blob',
                         compression: 'DEFLATE',
                         compressionOptions: { level: 6 }
                     });
 
                     const date = new Date().toISOString().split('T')[0];
-                    const filename = `photos_backup_${date}.zip`;
-                    
-                    const url = URL.createObjectURL(zipBlob);
                     const a = document.createElement('a');
-                    a.href = url;
-                    a.download = filename;
+                    a.href = URL.createObjectURL(zipBlob);
+                    a.download = `photos_backup_${date}.zip`;
                     a.click();
-                    URL.revokeObjectURL(url);
 
                     this.$('backupIcon').textContent = '✅';
                     this.$('backupTitle').textContent = 'வெற்றி!';
@@ -1043,17 +1564,14 @@
                 try {
                     const zip = await JSZip.loadAsync(file);
                     const allFiles = Object.keys(zip.files);
-                    
+
                     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'];
                     const imageFiles = allFiles.filter(name => {
                         if (zip.files[name].dir) return false;
-                        const lowerName = name.toLowerCase();
-                        return imageExtensions.some(ext => lowerName.endsWith(ext));
+                        return imageExtensions.some(ext => name.toLowerCase().endsWith(ext));
                     });
 
-                    if (imageFiles.length === 0) {
-                        throw new Error('படங்கள் இல்லை!');
-                    }
+                    if (imageFiles.length === 0) throw new Error('படங்கள் இல்லை!');
 
                     const total = imageFiles.length;
                     let restored = 0;
@@ -1061,7 +1579,7 @@
                     for (let i = 0; i < total; i++) {
                         const filePath = imageFiles[i];
                         const filename = filePath.split('/').pop();
-                        
+
                         this.$('restoreProgress').style.width = ((i + 1) / total * 100) + '%';
                         this.$('restoreStatus').textContent = `${i + 1}/${total}: ${filename}`;
 
@@ -1082,7 +1600,7 @@
                             });
                             restored++;
                         } catch (e) {
-                            console.error('Error:', filePath, e);
+                            console.error('Error restoring:', filePath);
                         }
 
                         await this.sleep(30);
@@ -1105,237 +1623,13 @@
                 this.$('restoreInput').value = '';
             }
 
-            // ==================== UPLOAD ====================
-            isSystemId(name) {
-                const base = name.replace(/\.[^.]+$/, '');
-                return /^\d+$/.test(base);
-            }
-
-            getExt(name) {
-                const m = name.match(/\.[^.]+$/);
-                return m ? m[0] : '.jpg';
-            }
-
-            onFilesSelected(files) {
-                if (!files || files.length === 0) return;
-                
-                this.queue = Array.from(files).filter(f => f.type.startsWith('image/'));
-                
-                if (this.queue.length === 0) {
-                    this.status('❌ படங்கள் இல்லை');
-                    return;
-                }
-                
-                this.$('selectedInfo').textContent = `📁 ${this.queue.length} படங்கள்`;
-                this.$('selectedInfo').classList.remove('hidden');
-                this.$('uploadBtn').disabled = false;
-            }
-
-            startUpload() {
-                if (this.queue.length === 0) return;
-                this.queueIndex = 0;
-                this.$('uploadBtn').disabled = true;
-                this.$('progressSection').classList.remove('hidden');
-                this.showUploadModal();
-            }
-
-            showUploadModal() {
-                if (this.queueIndex >= this.queue.length) {
-                    this.finishUpload();
-                    return;
-                }
-                
-                const file = this.queue[this.queueIndex];
-                const total = this.queue.length;
-                const current = this.queueIndex + 1;
-                
-                this.$('progressFill').style.width = (current / total * 100) + '%';
-                this.$('progressText').textContent = `${current}/${total}`;
-                this.$('uploadCounter').textContent = `படம் ${current}/${total}`;
-                
-                if (this.previewUrl) URL.revokeObjectURL(this.previewUrl);
-                this.previewUrl = URL.createObjectURL(file);
-                this.$('previewImage').src = this.previewUrl;
-                
-                if (this.isSystemId(file.name)) {
-                    this.$('systemWarning').classList.remove('hidden');
-                    this.$('systemName').textContent = file.name;
-                    this.$('imageNameInput').value = '';
-                } else {
-                    this.$('systemWarning').classList.add('hidden');
-                    this.$('imageNameInput').value = file.name.replace(/\.[^.]+$/, '');
-                }
-                
-                this.$('uploadModal').classList.add('show');
-                setTimeout(() => this.$('imageNameInput').focus(), 100);
-            }
-
-            async saveImage() {
-                const file = this.queue[this.queueIndex];
-                let name = this.$('imageNameInput').value.trim();
-                
-                if (!name) {
-                    alert('📛 பெயர் உள்ளிடவும்!');
-                    return;
-                }
-                
-                const ext = this.getExt(file.name);
-                if (!name.includes('.')) name += ext;
-                
-                await this.saveFile(file, name);
-                this.queueIndex++;
-                this.showUploadModal();
-            }
-
-            async skipImage() {
-                const file = this.queue[this.queueIndex];
-                const ext = this.getExt(file.name);
-                const name = this.isSystemId(file.name) ? `Image_${Date.now()}${ext}` : file.name;
-                
-                await this.saveFile(file, name);
-                this.queueIndex++;
-                this.showUploadModal();
-            }
-
-            async saveFile(file, filename) {
-                try {
-                    const buffer = await file.arrayBuffer();
-                    const blob = new Blob([buffer], { type: file.type });
-                    
-                    await this.db.add({
-                        blob, filename,
-                        size: file.size,
-                        date: Date.now()
-                    });
-                } catch (e) {
-                    console.error('Save error:', e);
-                }
-            }
-
-            async finishUpload() {
-                this.$('uploadModal').classList.remove('show');
-                const count = this.queue.length;
-                
-                this.$('progressSection').classList.add('hidden');
-                this.$('selectedInfo').classList.add('hidden');
-                this.$('fileInput').value = '';
-                this.$('uploadBtn').disabled = true;
-                
-                this.queue = [];
-                if (this.previewUrl) URL.revokeObjectURL(this.previewUrl);
-                
-                await this.loadImages();
-                this.status(`✅ ${count} படங்கள் சேமிக்கப்பட்டன!`);
-            }
-
-            // ==================== GALLERY ====================
-            async loadImages() {
-                this.images = await this.db.getAll();
-                this.images.sort((a, b) => (b.date || 0) - (a.date || 0));
-                this.renderGallery(this.images);
-                this.updateStats();
-            }
-
-            renderGallery(images) {
-                const gallery = this.$('gallery');
-                gallery.innerHTML = '';
-                
-                this.$('emptyState').classList.toggle('hidden', images.length > 0);
-                this.$('totalResults').classList.add('hidden');
-                this.$('backupBtn').disabled = images.length === 0;
-                
-                images.forEach(img => gallery.appendChild(this.createCard(img)));
-            }
-
-            createCard(img, highlightTerm = null) {
-                const card = document.createElement('div');
-                card.className = 'image-item';
-                card.dataset.id = img.id;
-                
-                const url = URL.createObjectURL(img.blob);
-                
-                // Highlight matching term in filename
-                let displayName = img.filename;
-                if (highlightTerm) {
-                    const regex = new RegExp(`(${highlightTerm})`, 'gi');
-                    displayName = img.filename.replace(regex, '<mark style="background:#ffd700;padding:0 2px;border-radius:2px;">$1</mark>');
-                }
-                
-                card.innerHTML = `
-                    <img src="${url}" loading="lazy">
-                    <div class="filename">${displayName}</div>
-                    <div class="btn-group">
-                        <button class="btn btn-success">⬇️</button>
-                        <button class="btn btn-danger">🗑️</button>
-                    </div>
-                `;
-                
-                card.querySelector('img').onclick = () => this.openModal(img.id, url, img.filename);
-                card.querySelectorAll('.btn-group .btn')[0].onclick = (e) => { e.stopPropagation(); this.downloadImage(img.id); };
-                card.querySelectorAll('.btn-group .btn')[1].onclick = (e) => { e.stopPropagation(); this.deleteImage(img.id, card); };
-                
-                return card;
-            }
-
-            openModal(id, url, filename) {
-                this.modalImageId = id;
-                this.$('modalImage').src = url;
-                this.$('modalFilename').textContent = '📄 ' + filename;
-                this.$('imageModal').classList.add('show');
-            }
-
-            closeModal() {
-                this.$('imageModal').classList.remove('show');
-            }
-
-            async downloadImage(id) {
-                const img = await this.db.get(id);
-                if (!img) return;
-                
-                const url = URL.createObjectURL(img.blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = img.filename;
-                a.click();
-                URL.revokeObjectURL(url);
-            }
-
-            async deleteImage(id, card = null) {
-                const img = await this.db.get(id);
-                if (!img || !confirm(`"${img.filename}" அழிக்கவா?`)) return;
-                
-                await this.db.delete(id);
-                if (card) card.remove();
-                
-                this.images = this.images.filter(i => i.id !== id);
-                this.updateStats();
-                
-                if (this.images.length === 0) this.$('emptyState').classList.remove('hidden');
-            }
-
-            async clearAll() {
-                if (this.images.length === 0) return;
-                if (!confirm(`⚠️ ${this.images.length} படங்களை அழிக்கவா?`)) return;
-                
-                await this.db.clear();
-                this.images = [];
-                this.$('gallery').innerHTML = '';
-                this.$('emptyState').classList.remove('hidden');
-                this.$('totalResults').classList.add('hidden');
-                this.updateStats();
-            }
-
-            updateStats() {
-                this.$('totalImages').textContent = this.images.length;
-                const mb = (this.images.reduce((s, i) => s + (i.size || 0), 0) / 1024 / 1024).toFixed(2);
-                this.$('storageUsed').textContent = mb + ' MB';
-            }
-
+            // ==================== UTILS ====================
             status(msg) { this.$('status').textContent = msg; }
             sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
         }
 
-        new App();
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => new App());
     })();
     </script>
 </body>
